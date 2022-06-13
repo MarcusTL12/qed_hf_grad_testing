@@ -2,6 +2,8 @@ using OhMyREPL
 using LinearAlgebra
 using Optim
 
+const OMP_THREADS = 8
+
 include("get_matrix.jl")
 include("get_dipole.jl")
 
@@ -59,7 +61,7 @@ function write_inp(inp, name)
 end
 
 function run_inp(name)
-    run(`/home/marcus/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp`)
+    run(`/home/marcus/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(OMP_THREADS)`)
     nothing
 end
 
@@ -206,7 +208,96 @@ function test_water_dimer()
     ]
 
     freq = 0.5
-    pol = [0, 0, 1]
+    pol = [1, 0, 0]
+    pol = pol / norm(pol)
+    coup = 0.1
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+
+    fg! = make_e_and_grad_func(rf)
+
+    o = optimize(Optim.only_fg!(fg!), r, BFGS())
+
+    d = find_dipole(atoms, basis, o.minimizer)
+    d = d / norm(d)
+    @show d
+    @show d ⋅ pol
+
+    o
+end
+
+function test_water_trimer()
+    atoms = "OHHOHHOHH"
+    basis = "cc-pvdz"
+    r = [
+        -0.145703 -0.446538 0.13401 -1.23528 -0.924709 -1.07802 0.230292 -0.216977 -0.222893
+        1.1782 0.843319 0.415605 1.85472 2.68508 1.88263 -0.593172 0.130116 -1.37531
+        2.16214 2.99351 1.66178 -0.403491 -0.733612 0.537028 -0.0712878 -0.503138 -0.348116
+    ]
+
+    freq = 0.5
+    pol = [1, 0, 0]
+    pol = pol / norm(pol)
+    coup = 0.1
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+
+    fg! = make_e_and_grad_func(rf)
+
+    o = optimize(Optim.only_fg!(fg!), r, BFGS())
+
+    d = find_dipole(atoms, basis, o.minimizer)
+    d = d / norm(d)
+    @show d
+    @show d ⋅ pol
+
+    o
+end
+
+function test_water4()
+    atoms = "OHHOHHOHHOHH"
+    basis = "cc-pvdz"
+    r = copy([
+        -5.48216 1.31999 -0.13616
+        -4.92079 2.13320 -0.05848
+        -6.35764 1.72787 -0.24490
+        -3.40056 -0.42208 -0.17358
+        -3.79913 -1.30045 -0.05402
+        -4.21760 0.13904 -0.18189
+        -1.66157 1.66196 -0.21751
+        -0.79366 1.26773 -0.40721
+        -2.22017 0.84375 -0.18604
+        -3.73835 3.39534 0.00966
+        -2.92409 2.83921 -0.09118
+        -3.33220 4.26005 0.18855
+        -5.48216 1.31999 -0.13616
+        -4.92079 2.13320 -0.05848
+        -6.35764 1.72787 -0.24490
+        -3.40056 -0.42208 -0.17358
+        -3.79913 -1.30045 -0.05402
+        -4.21760 0.13904 -0.18189
+        -1.66157 1.66196 -0.21751
+        -0.79366 1.26773 -0.40721
+        -2.22017 0.84375 -0.18604
+        -3.73835 3.39534 0.00966
+        -2.92409 2.83921 -0.09118
+        -3.33220 4.26005 0.18855
+        -5.48216 1.31999 -0.13616
+        -4.92079 2.13320 -0.05848
+        -6.35764 1.72787 -0.24490
+        -3.40056 -0.42208 -0.17358
+        -3.79913 -1.30045 -0.05402
+        -4.21760 0.13904 -0.18189
+        -1.66157 1.66196 -0.21751
+        -0.79366 1.26773 -0.40721
+        -2.22017 0.84375 -0.18604
+        -3.73835 3.39534 0.00966
+        -2.92409 2.83921 -0.09118
+        -3.33220 4.26005 0.18855
+    ]')
+
+    freq = 0.5
+    pol = [1, 0, 0]
     pol = pol / norm(pol)
     coup = 0.05
 

@@ -51,7 +51,7 @@ basis: $basis
 end
 
 function run_inp_clean(name)
-    run(`/home/marcus/eT_clean/build/eT_launch.py $(name).inp`)
+    run(`/home/marcus/eT_clean/build/eT_launch.py $(name).inp --omp $(OMP_THREADS)`)
     nothing
 end
 
