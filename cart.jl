@@ -3,6 +3,7 @@ using LinearAlgebra
 using Optim
 
 include("get_matrix.jl")
+include("get_dipole.jl")
 
 function make_inp_func(freq, pol, coup, atoms, basis)
     function make_inp(r)
@@ -13,7 +14,7 @@ function make_inp_func(freq, pol, coup, atoms, basis)
             io,
             """
 system
-    name: H2O
+    name: Gradient
     charge: 0
 end system
 
@@ -145,24 +146,33 @@ function test_h2o()
     optimize(Optim.only_fg!(fg!), r, BFGS())
 end
 
-function test_h2o2()
+function test_h2o_2()
     atoms = "OHH"
     basis = "cc-pvdz"
     r = Float64[
-        0 1 0
-        0 0 1
-        0 0 0
+        0.0242582 0.487871 0.487871
+        0.333334 -0.467428 1.13409
+        -3.36049e-14 1.37509e-14 1.74483e-14
     ]
 
     freq = 0.5
-    pol = [1, 0, 0]
-    coup = 0.0
+    pol = [1, 0.0, 0.1]
+    pol = pol / norm(pol)
+    @show pol
+    coup = 0.3
 
     rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
 
     fg! = make_e_and_grad_func(rf)
 
-    optimize(Optim.only_fg!(fg!), r, BFGS())
+    o = optimize(Optim.only_fg!(fg!), r, BFGS())
+
+    d = find_dipole(atoms, basis, o.minimizer)
+    d = d / norm(d)
+    @show d
+    @show d ⋅ pol
+
+    o
 end
 
 function test_formacid()
@@ -176,6 +186,7 @@ function test_formacid()
 
     freq = 0.5
     pol = [0.4291825729017116, 0.8285415035462194, 0.35961270280516694]
+    pol = pol / norm(pol)
     coup = 0.5
 
     rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
@@ -195,12 +206,20 @@ function test_water_dimer()
     ]
 
     freq = 0.5
-    pol = [1, 0, 0]
-    coup = 0.5
+    pol = [0, 0, 1]
+    pol = pol / norm(pol)
+    coup = 0.05
 
     rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
 
     fg! = make_e_and_grad_func(rf)
 
-    optimize(Optim.only_fg!(fg!), r, BFGS())
+    o = optimize(Optim.only_fg!(fg!), r, BFGS())
+
+    d = find_dipole(atoms, basis, o.minimizer)
+    d = d / norm(d)
+    @show d
+    @show d ⋅ pol
+
+    o
 end

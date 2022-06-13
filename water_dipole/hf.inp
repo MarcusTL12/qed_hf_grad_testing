@@ -1,0 +1,27 @@
+system
+    name: H2O
+    charge: 0
+end system
+
+do
+    ground state
+end do
+
+memory
+    available: 8
+end memory
+
+method
+    hf
+end method
+
+hf mean value
+   dipole
+end hf mean value
+
+geometry
+basis: cc-pvdz
+    O 0.0 0.0 0.0
+    H 1.0 0.0 0.0
+    H 0.0 1.0 0.0
+end geometry

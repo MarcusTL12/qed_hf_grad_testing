@@ -1,0 +1,213 @@
+
+
+
+                     eT 1.8 - an electronic structure program
+
+  ------------------------------------------------------------------------
+   Author list in alphabetical order:
+  ------------------------------------------------------------------------
+   J. H. Andersen, A. Balbi, S. Coriani, S. D. Folkestad, T. Giovannini, 
+   L. Goletto, T. S. Haugland, A. Hutcheson, I-M. Høyvik, E. F. Kjønstad, 
+   H. Koch, R. Matveeva, T. Moitra, R. H. Myhre, A. C. Paul, S. Roet, 
+   E. Ronca, M. Scavino, A. K. Schnack-Petersen, A. S. Skeidsvoll, Å. 
+   H. Tveten
+  ------------------------------------------------------------------------
+   J. Chem. Phys. 152, 184103 (2020); https://doi.org/10.1063/5.0004713
+
+
+   This is eT 1.8.0 Ibiza (development)
+  ------------------------------------------------------------
+  Configuration date: 2022-05-19 10:17:14 UTC +02:00
+  Git branch:         development
+  Git hash:           5fa33bb5e0a3c085205f2bdb99c7dd22b9ca1819
+  Fortran compiler:   GNU 10.3.0
+  C compiler:         GNU 10.3.0
+  C++ compiler:       GNU 10.3.0
+  LAPACK type:        MKL
+  BLAS type:          MKL
+  64-bit integers:    ON
+  OpenMP:             ON
+  PCM:                OFF
+  Forced batching:    OFF
+  Runtime checks:     OFF
+  ------------------------------------------------------------
+
+
+  :: Input file
+  ================
+
+     Note: geometry section is excluded from this print
+
+     system
+         name: H2O
+         charge: 0
+     end system
+
+     do
+         ground state
+     end do
+
+     memory
+         available: 8
+     end memory
+
+     method
+         hf
+     end method
+
+     hf mean value
+        dipole
+     end hf mean value
+
+
+  Calculation start:2022-06-13 15:06:19 UTC +02:00
+
+  Running on 8 OMP threads
+  Memory available for calculation: 8.000000 GB
+
+
+  :: RHF wavefunction
+  ======================
+
+     ==============================================================================
+                                     Geometry (angstrom)
+     ==============================================================================
+        Atom           X                  Y                  Z         # in input
+     ==============================================================================
+        Basis: cc-pvdz
+        1  O     0.000000000000     0.000000000000     0.000000000000        1
+        2  H     1.000000000000     0.000000000000     0.000000000000        2
+        3  H     0.000000000000     1.000000000000     0.000000000000        3
+     ==============================================================================
+
+     ==============================================================================
+                                     Geometry (a.u.)
+     ==============================================================================
+        Atom           X                  Y                  Z         # in input
+     ==============================================================================
+        Basis: cc-pvdz
+        1  O     0.000000000000     0.000000000000     0.000000000000        1
+        2  H     1.889726124565     0.000000000000     0.000000000000        2
+        3  H     0.000000000000     1.889726124565     0.000000000000        3
+     ==============================================================================
+
+  - Cholesky decomposition of AO overlap to get linearly independent AOs:
+
+     Linear dependence threshold:             0.10E-05
+     Number of atomic orbitals:               24
+     Number of orthonormal atomic orbitals:   24
+
+  - Molecular orbital details:
+
+     Number of occupied orbitals:         5
+     Number of virtual orbitals:         19
+     Number of molecular orbitals:       24
+
+
+  :: Hartree-Fock engine
+  =========================
+
+  Drives the calculation of the Hartree-Fock state.
+
+  This is a RHF ground state calculation.
+  The following tasks will be performed:
+
+     1) Generate initial SAD density
+     2) Calculation of reference state (SCF-DIIS algorithm)
+     3) Calculate dipole and/or quadrupole moments
+
+
+  1) Generate initial SAD density
+
+
+  2) Calculation of reference state (SCF-DIIS algorithm)
+
+  - Setting initial AO density to sad
+
+     Energy of initial guess:               -75.830756489999
+     Number of electrons in guess:           10.000000000000
+
+  - Screening and integral thresholds:
+
+     Coulomb screening threshold:    0.1000E-12
+     Exchange screening threshold:   0.1000E-10
+     ERI cutoff:                     0.1000E-12
+     One-electron integral  cutoff:  0.1000E-17
+     Cumulative Fock threshold:      0.1000E+01
+
+  - SCF solver settings:
+
+     Maximum iterations:                   100
+     Acceleration type:                   diis
+
+  - Convergence thresholds
+
+     Residual threshold:            0.1000E-06
+
+  - DIIS tool settings:
+
+     DIIS dimension:   8
+
+     Storage (solver scf_errors): memory
+     Storage (solver scf_parameters): memory
+
+  Iteration       Energy (a.u.)      Max(grad.)    Delta E (a.u.)
+  ---------------------------------------------------------------
+     1           -75.973256307575     0.8407E-01     0.7597E+02
+     2           -76.005116170064     0.5666E-01     0.3186E-01
+     3           -76.016531129823     0.3853E-02     0.1141E-01
+     4           -76.016761290212     0.1787E-02     0.2302E-03
+     5           -76.016788189790     0.2726E-03     0.2690E-04
+     6           -76.016789425967     0.5933E-04     0.1236E-05
+     7           -76.016789470382     0.8157E-05     0.4442E-07
+     8           -76.016789472020     0.2428E-05     0.1637E-08
+     9           -76.016789472074     0.1289E-06     0.5430E-10
+    10           -76.016789472074     0.8406E-08     0.2416E-12
+  ---------------------------------------------------------------
+  Convergence criterion met in 10 iterations!
+
+  - Summary of RHF wavefunction energetics (a.u.):
+
+     HOMO-LUMO gap:                  0.670144731576
+     Nuclear repulsion energy:       8.841020169011
+     Electronic energy:            -84.857809641085
+     Total energy:                 -76.016789472074
+
+
+  3) Calculate dipole and/or quadrupole moments
+
+  - Operator: dipole moment [a.u.]
+
+     x:          0.6408990
+     y:          0.6408990
+     z:          0.0000000
+
+     |mu|:       0.9063681
+
+  - Operator: dipole moment [Debye]
+
+     x:          1.6290029
+     y:          1.6290029
+     z:          0.0000000
+
+     |mu|:       2.3037580
+
+  - Timings for the RHF ground state calculation
+
+     Total wall time (sec):              0.14394
+     Total cpu time (sec):               1.12366
+
+  ------------------------------------------------------------
+
+  Peak memory usage during the execution of eT: 135.376 KB
+
+  Total wall time in eT (sec):              0.19754
+  Total cpu time in eT (sec):               1.32317
+
+  Calculation end:2022-06-13 15:06:19 UTC +02:00
+
+  - Implementation references:
+
+     eT: https://doi.org/10.1063/5.0004713
+
+  eT terminated successfully!
