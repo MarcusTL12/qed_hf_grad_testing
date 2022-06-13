@@ -1,0 +1,30 @@
+  ------------------------------------------------------------
+  Configuration date: 2022-05-19 10:17:14 UTC +02:00
+  Git branch:         development
+  Git hash:           5fa33bb5e0a3c085205f2bdb99c7dd22b9ca1819
+  Fortran compiler:   GNU 10.3.0
+  C compiler:         GNU 10.3.0
+  C++ compiler:       GNU 10.3.0
+  LAPACK type:        MKL
+  BLAS type:          MKL
+  64-bit integers:    ON
+  OpenMP:             ON
+  PCM:                OFF
+  Forced batching:    OFF
+  Runtime checks:     OFF
+  ------------------------------------------------------------
+
+  Description                                 wall[s]         cpu[s]    cpu/wall
+  -------------------------------------------------------------------------------------
+  One-electron integrals (overlap)             0.00            0.00      2.52
+  Cholesky decomposition of AO        
+  overlap                                      0.00            0.00      1.00
+  Time initializing AO tool                    0.04            0.05      1.32
+
+  :: Hartree-Fock geometry optimization engine
+  ===============================================
+
+  1) Calculation of optimized geometry (bfgs algorithm)
+
+  Description                                 wall[s]         cpu[s]    cpu/wall
+  -------------------------------------------------------------------------------------

@@ -1,0 +1,26 @@
+system
+    name: 2H2O
+    charge: 0
+end system
+
+do
+    ground state geoopt
+end do
+
+memory
+    available: 8
+end memory
+
+method
+    hf
+end method
+
+geometry
+basis: cc-pvdz
+    O  -0.254064  -0.201981   -0.0888177
+    H  -0.109578  -1.07289    -0.532559
+    H   0.61653   -0.0874223   0.367393
+    O   2.15268    0.123211    1.17988
+    H   2.02247    0.259322    2.1488
+    H   2.57196    0.979764    0.925297
+end geometry

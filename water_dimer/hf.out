@@ -1,0 +1,123 @@
+
+
+
+                     eT 1.8 - an electronic structure program
+
+  ------------------------------------------------------------------------
+   Author list in alphabetical order:
+  ------------------------------------------------------------------------
+   J. H. Andersen, A. Balbi, S. Coriani, S. D. Folkestad, T. Giovannini, 
+   L. Goletto, T. S. Haugland, A. Hutcheson, I-M. Høyvik, E. F. Kjønstad, 
+   H. Koch, R. Matveeva, T. Moitra, R. H. Myhre, A. C. Paul, S. Roet, 
+   E. Ronca, M. Scavino, A. K. Schnack-Petersen, A. S. Skeidsvoll, Å. 
+   H. Tveten
+  ------------------------------------------------------------------------
+   J. Chem. Phys. 152, 184103 (2020); https://doi.org/10.1063/5.0004713
+
+
+   This is eT 1.8.0 Ibiza (development)
+  ------------------------------------------------------------
+  Configuration date: 2022-05-19 10:17:14 UTC +02:00
+  Git branch:         development
+  Git hash:           5fa33bb5e0a3c085205f2bdb99c7dd22b9ca1819
+  Fortran compiler:   GNU 10.3.0
+  C compiler:         GNU 10.3.0
+  C++ compiler:       GNU 10.3.0
+  LAPACK type:        MKL
+  BLAS type:          MKL
+  64-bit integers:    ON
+  OpenMP:             ON
+  PCM:                OFF
+  Forced batching:    OFF
+  Runtime checks:     OFF
+  ------------------------------------------------------------
+
+
+  :: Input file
+  ================
+
+     Note: geometry section is excluded from this print
+
+     system
+         name: 2H2O
+         charge: 0
+     end system
+
+     do
+         ground state geoopt
+     end do
+
+     memory
+         available: 8
+     end memory
+
+     method
+         hf
+     end method
+
+
+  Calculation start:2022-06-13 14:19:06 UTC +02:00
+
+  Running on 8 OMP threads
+  Memory available for calculation: 8.000000 GB
+
+
+  :: RHF wavefunction
+  ======================
+
+     ==============================================================================
+                                     Geometry (angstrom)
+     ==============================================================================
+        Atom           X                  Y                  Z         # in input
+     ==============================================================================
+        Basis: cc-pvdz
+        1  O    -0.254064000000    -0.201981000000    -0.088817700000        1
+        2  H    -0.109578000000    -1.072890000000    -0.532559000000        2
+        3  H     0.616530000000    -0.087422300000     0.367393000000        3
+        4  O     2.152680000000     0.123211000000     1.179880000000        4
+        5  H     2.022470000000     0.259322000000     2.148800000000        5
+        6  H     2.571960000000     0.979764000000     0.925297000000        6
+     ==============================================================================
+
+     ==============================================================================
+                                     Geometry (a.u.)
+     ==============================================================================
+        Atom           X                  Y                  Z         # in input
+     ==============================================================================
+        Basis: cc-pvdz
+        1  O    -0.480111378111    -0.381688772366    -0.167841128014        1
+        2  H    -0.207072409278    -2.027468261785    -1.006390655172        2
+        3  H     1.165072847578    -0.165204204180     0.694272150082        3
+        4  O     4.067975633829     0.232835045534     2.229650059852        4
+        5  H     3.821914395149     0.490047558074     4.060643496465        5
+        6  H     4.860300003336     1.851485626708     1.748557913882        6
+     ==============================================================================
+
+  - Cholesky decomposition of AO overlap to get linearly independent AOs:
+
+     Linear dependence threshold:             0.10E-05
+     Number of atomic orbitals:               48
+     Number of orthonormal atomic orbitals:   48
+
+  - Molecular orbital details:
+
+     Number of occupied orbitals:        10
+     Number of virtual orbitals:         38
+     Number of molecular orbitals:       48
+
+
+  :: Hartree-Fock geometry optimization engine
+  ===============================================
+
+  Calculates the optimized geometry for the Hartree-Fock wavefunction.
+
+  This is a RHF geometry optimization calculation.
+  The following tasks will be performed:
+
+     1) Calculation of optimized geometry (bfgs algorithm)
+
+
+  1) Calculation of optimized geometry (bfgs algorithm)
+
+  Error: Not enough internal coordinates found. Only 6 found, but expected 
+         at least 3N-6 = 12. Try starting from a better geometry.
