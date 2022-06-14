@@ -1,7 +1,7 @@
 
 
 
-                     eT 1.7 - an electronic structure program
+                     eT 1.8 - an electronic structure program
 
   ------------------------------------------------------------------------
    Author list in alphabetical order:
@@ -9,20 +9,20 @@
    J. H. Andersen, A. Balbi, S. Coriani, S. D. Folkestad, T. Giovannini, 
    L. Goletto, T. S. Haugland, A. Hutcheson, I-M. Høyvik, E. F. Kjønstad, 
    H. Koch, R. Matveeva, T. Moitra, R. H. Myhre, A. C. Paul, S. Roet, 
-   E. RoncaM. Scavino, A. K. Schnack-Petersen, A. S. Skeidsvoll, Å. 
+   E. Ronca, M. Scavino, A. K. Schnack-Petersen, A. S. Skeidsvoll, Å. 
    H. Tveten
   ------------------------------------------------------------------------
    J. Chem. Phys. 152, 184103 (2020); https://doi.org/10.1063/5.0004713
 
 
-   This is eT 1.7.4 Hydra
+   This is eT 1.8.0 Ibiza (development)
   ------------------------------------------------------------
-  Configuration date: 2022-06-13 16:57:12 UTC +02:00
-  Git branch:         master
-  Git hash:           d00602a22ae8720c5dde75be4f18972ebdb3c9a2
-  Fortran compiler:   GNU 9.4.0
-  C compiler:         GNU 9.4.0
-  C++ compiler:       GNU 9.4.0
+  Configuration date: 2022-05-19 10:17:14 UTC +02:00
+  Git branch:         development
+  Git hash:           5fa33bb5e0a3c085205f2bdb99c7dd22b9ca1819
+  Fortran compiler:   GNU 10.3.0
+  C compiler:         GNU 10.3.0
+  C++ compiler:       GNU 10.3.0
   LAPACK type:        MKL
   BLAS type:          MKL
   64-bit integers:    ON
@@ -31,8 +31,6 @@
   Forced batching:    OFF
   Runtime checks:     OFF
   ------------------------------------------------------------
-
-  Calculation started: 2022-06-14 01:38:59 UTC +02:00
 
 
   :: Input file
@@ -62,7 +60,9 @@
      end hf mean value
 
 
-  Running on 16 OMP threads
+  Calculation start:2022-06-14 13:29:36 UTC +02:00
+
+  Running on 4 OMP threads
   Memory available for calculation: 8.000000 GB
 
 
@@ -74,16 +74,13 @@
      ==============================================================================
         Atom           X                  Y                  Z         # in input
      ==============================================================================
-        Basis: aug-cc-pvdz
-        1  O    -0.402632724990     1.093522795569     2.233270917736        1
-        2  H    -0.456417892091     0.946880463065     3.160559615711        2
-        3  H    -0.312470538379     0.244558346049     1.822113810716        3
-        4  O    -0.740412614174     2.025230790114    -0.499721252928        4
-        5  H    -0.611585161746     2.890859442594    -0.843968819956        5
-        6  H    -0.704251231809     2.095684703862     0.444636228740        6
-        7  O    -0.149502512486    -0.770651596130     0.025241150150        7
-        8  H    -0.284679493858     0.006093909522    -0.500510545442        8
-        9  H    -0.243866831031    -1.510987379443    -0.546817607377        9
+        Basis: cc-pvdz
+        1  O     1.166662164507    -0.656871744471    -1.021097743752        1
+        2  H     1.166663121192    -1.589340174608    -0.865801445723        2
+        3  H     1.166663135893    -0.268493966213    -0.154285658084        3
+        4  O     1.166666861375     0.620270145322     1.700913361352        4
+        5  H     1.166659174360     0.328533676893     2.600615182184        5
+        6  H     1.166669542777     1.565899063294     1.739636104387        6
      ==============================================================================
 
      ==============================================================================
@@ -91,29 +88,26 @@
      ==============================================================================
         Atom           X                  Y                  Z         # in input
      ==============================================================================
-        Basis: aug-cc-pvdz
-        1  O    -0.760865579018     2.066458594593     4.220270396476        1
-        2  H    -0.862504814402     1.789344747894     5.972592074055        2
-        3  H    -0.590483739531     0.462148295509     3.443296070040        3
-        4  O    -1.399177059962     3.827131532352    -0.944336306659        4
-        5  H    -1.155728457548     5.462932611115    -1.594869927390        5
-        6  H    -1.330841951007     3.960270133739     0.840240697377        6
-        7  O    -0.282518803533    -1.456320454145     0.047698860853        7
-        8  H    -0.537966276671     0.011515820025    -0.945827853341        8
-        9  H    -0.460841521514    -2.855352324822    -1.033335518032        9
+        Basis: cc-pvdz
+        1  O     2.204671970810    -1.241307696015    -1.929595082103        1
+        2  H     2.204673778682    -3.003417648777    -1.636127610670        2
+        3  H     2.204673806463    -0.507380062241    -0.291557638727        3
+        4  O     2.204680846604     1.172140697903     3.214260414568        4
+        5  H     2.204666320252     0.620838672025     4.914450449714        5
+        6  H     2.204685913721     2.959120368339     3.287435793697        6
      ==============================================================================
 
   - Cholesky decomposition of AO overlap to get linearly independent AOs:
 
      Linear dependence threshold:             0.10E-05
-     Number of atomic orbitals:               123
-     Number of orthonormal atomic orbitals:   123
+     Number of atomic orbitals:               48
+     Number of orthonormal atomic orbitals:   48
 
   - Molecular orbital details:
 
-     Number of occupied orbitals:        15
-     Number of virtual orbitals:        108
-     Number of molecular orbitals:      123
+     Number of occupied orbitals:        10
+     Number of virtual orbitals:         38
+     Number of molecular orbitals:       48
 
 
   :: Hartree-Fock engine
@@ -136,8 +130,8 @@
 
   - Setting initial AO density to sad
 
-     Energy of initial guess:              -227.712709486786
-     Number of electrons in guess:           30.000000000000
+     Energy of initial guess:              -151.857473499702
+     Number of electrons in guess:           20.000000000000
 
   - Screening and integral thresholds:
 
@@ -165,58 +159,59 @@
 
   Iteration       Energy (a.u.)      Max(grad.)    Delta E (a.u.)
   ---------------------------------------------------------------
-     1          -228.021000060980     0.9552E-01     0.2280E+03
-     2          -228.106953502489     0.6490E-01     0.8595E-01
-     3          -228.142918680165     0.4137E-02     0.3597E-01
-     4          -228.143452146324     0.9742E-03     0.5335E-03
-     5          -228.143478035503     0.1707E-03     0.2589E-04
-     6          -228.143479489489     0.3782E-04     0.1454E-05
-     7          -228.143479543080     0.1235E-04     0.5359E-07
-     8          -228.143479546622     0.5160E-05     0.3542E-08
-     9          -228.143479546858     0.8773E-06     0.2364E-09
-    10          -228.143479546878     0.9636E-07     0.1978E-10
+     1          -151.990956006472     0.8294E-01     0.1520E+03
+     2          -152.045951655213     0.6032E-01     0.5500E-01
+     3          -152.061991583635     0.4364E-02     0.1604E-01
+     4          -152.062346581097     0.1261E-02     0.3550E-03
+     5          -152.062369381797     0.3738E-03     0.2280E-04
+     6          -152.062370339513     0.1035E-03     0.9577E-06
+     7          -152.062370409484     0.2702E-04     0.6997E-07
+     8          -152.062370415034     0.1653E-05     0.5550E-08
+     9          -152.062370415107     0.4310E-06     0.7341E-10
+    10          -152.062370415113     0.1593E-06     0.5230E-11
+    11          -152.062370415124     0.2842E-07     0.1194E-10
   ---------------------------------------------------------------
-  Convergence criterion met in 10 iterations!
+  Convergence criterion met in 11 iterations!
 
   - Summary of RHF wavefunction energetics (a.u.):
 
-     HOMO-LUMO gap:                  0.536007544843
-     Nuclear repulsion energy:      82.253561509361
-     Electronic energy:           -310.397041056238
-     Total energy:                -228.143479546878
+     HOMO-LUMO gap:                  0.627076991126
+     Nuclear repulsion energy:      36.133472666629
+     Electronic energy:           -188.195843081754
+     Total energy:                -152.062370415124
 
 
   3) Calculate dipole and/or quadrupole moments
 
   - Operator: dipole moment [a.u.]
 
-     x:         -0.0194951
-     y:         -0.0141792
-     z:          0.0124480
+     x:         -0.0000019
+     y:          0.1789514
+     z:          1.5365067
 
-     |mu|:       0.0271305
+     |mu|:       1.5468925
 
   - Operator: dipole moment [Debye]
 
-     x:         -0.0495516
-     y:         -0.0360400
-     z:          0.0316397
+     x:         -0.0000049
+     y:          0.4548490
+     z:          3.9054106
 
-     |mu|:       0.0689588
+     |mu|:       3.9318086
 
   - Timings for the RHF ground state calculation
 
-     Total wall time (sec):              2.83740
-     Total cpu time (sec):              44.21082
+     Total wall time (sec):              0.78698
+     Total cpu time (sec):               3.12382
 
   ------------------------------------------------------------
 
-  Peak memory usage during the execution of eT: 4.456232 MB
+  Peak memory usage during the execution of eT: 494.688 KB
 
-  Total wall time in eT (sec):              2.88337
-  Total cpu time in eT (sec):              44.43085
+  Total wall time in eT (sec):              0.80811
+  Total cpu time in eT (sec):               3.14761
 
-  Calculation ended: 2022-06-14 01:39:02 UTC +02:00
+  Calculation end:2022-06-14 13:29:36 UTC +02:00
 
   - Implementation references:
 

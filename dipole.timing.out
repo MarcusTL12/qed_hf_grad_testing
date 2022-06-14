@@ -1,10 +1,10 @@
   ------------------------------------------------------------
-  Configuration date: 2022-06-13 16:57:12 UTC +02:00
-  Git branch:         master
-  Git hash:           d00602a22ae8720c5dde75be4f18972ebdb3c9a2
-  Fortran compiler:   GNU 9.4.0
-  C compiler:         GNU 9.4.0
-  C++ compiler:       GNU 9.4.0
+  Configuration date: 2022-05-19 10:17:14 UTC +02:00
+  Git branch:         development
+  Git hash:           5fa33bb5e0a3c085205f2bdb99c7dd22b9ca1819
+  Fortran compiler:   GNU 10.3.0
+  C compiler:         GNU 10.3.0
+  C++ compiler:       GNU 10.3.0
   LAPACK type:        MKL
   BLAS type:          MKL
   64-bit integers:    ON
@@ -16,10 +16,10 @@
 
   Description                                 wall[s]         cpu[s]    cpu/wall
   -------------------------------------------------------------------------------------
-  One-electron integrals (overlap)             0.00            0.01      6.90
+  One-electron integrals (overlap)             0.00            0.00      2.06
   Cholesky decomposition of AO        
-  overlap                                      0.01            0.17     11.56
-  Time initializing AO tool                    0.05            0.22      4.86
+  overlap                                      0.00            0.00      1.00
+  Time initializing AO tool                    0.02            0.02      1.13
 
   :: Hartree-Fock engine
   =========================
@@ -28,7 +28,7 @@
 
   Description                                 wall[s]         cpu[s]    cpu/wall
   -------------------------------------------------------------------------------------
-  SAD generation time                          0.08            1.19     14.35
+  SAD generation time                          0.11            0.41      3.74
 
   2) Calculation of reference state (SCF-DIIS algorithm)
 
@@ -36,37 +36,40 @@
   -------------------------------------------------------------------------------------
   One-electron integrals              
   (hamiltonian)                                0.00            0.00      1.00
-  AO G construction                            0.07            1.07     14.78
-  AO G construction                            0.28            4.49     15.78
-  SCF diagonalization                          0.00            0.01      2.09
-  SCF iteration                                0.29            4.58     15.63
-  AO G construction                            0.29            4.53     15.88
-  SCF diagonalization                          0.00            0.01      2.65
-  SCF iteration                                0.29            4.55     15.58
-  AO G construction                            0.30            4.72     15.76
-  SCF diagonalization                          0.00            0.03     12.77
-  SCF iteration                                0.31            4.76     15.59
-  AO G construction                            0.27            4.32     15.87
-  SCF diagonalization                          0.00            0.03     10.45
-  SCF iteration                                0.28            4.37     15.71
-  AO G construction                            0.27            4.32     15.96
-  SCF diagonalization                          0.00            0.00      1.51
-  SCF iteration                                0.28            4.33     15.67
-  AO G construction                            0.26            4.12     15.91
-  SCF diagonalization                          0.00            0.04     14.97
-  SCF iteration                                0.26            4.17     15.74
-  AO G construction                            0.25            3.99     15.88
-  SCF diagonalization                          0.00            0.01      2.07
-  SCF iteration                                0.26            4.01     15.56
-  AO G construction                            0.24            3.78     15.85
-  SCF diagonalization                          0.00            0.03     13.66
-  SCF iteration                                0.24            3.82     15.67
-  AO G construction                            0.22            3.54     15.78
-  SCF diagonalization                          0.00            0.00      1.82
-  SCF iteration                                0.23            3.59     15.59
-  AO G construction                            0.22            3.40     15.71
-  SCF iteration                                0.22            3.44     15.72
-  SCF solver                                   2.66           41.60     15.64
+  AO G construction                            0.03            0.15      4.70
+  AO G construction                            0.06            0.23      4.04
+  SCF diagonalization                          0.00            0.00      1.00
+  SCF iteration                                0.06            0.23      3.99
+  AO G construction                            0.06            0.24      3.90
+  SCF diagonalization                          0.00            0.00      1.00
+  SCF iteration                                0.06            0.24      3.87
+  AO G construction                            0.06            0.24      3.91
+  SCF diagonalization                          0.00            0.00      1.00
+  SCF iteration                                0.06            0.24      3.87
+  AO G construction                            0.05            0.23      4.29
+  SCF diagonalization                          0.00            0.00      1.00
+  SCF iteration                                0.06            0.24      4.24
+  AO G construction                            0.06            0.24      3.92
+  SCF diagonalization                          0.00            0.00      1.00
+  SCF iteration                                0.06            0.24      3.88
+  AO G construction                            0.06            0.24      3.89
+  SCF diagonalization                          0.00            0.00      1.00
+  SCF iteration                                0.06            0.24      3.85
+  AO G construction                            0.06            0.24      4.09
+  SCF diagonalization                          0.00            0.00      1.00
+  SCF iteration                                0.06            0.24      4.04
+  AO G construction                            0.06            0.24      4.23
+  SCF diagonalization                          0.00            0.00      1.00
+  SCF iteration                                0.06            0.24      4.19
+  AO G construction                            0.05            0.20      3.92
+  SCF diagonalization                          0.00            0.00      1.00
+  SCF iteration                                0.05            0.20      3.88
+  AO G construction                            0.05            0.20      4.25
+  SCF diagonalization                          0.00            0.00      1.00
+  SCF iteration                                0.05            0.20      4.18
+  AO G construction                            0.05            0.20      4.14
+  SCF iteration                                0.05            0.20      4.12
+  SCF solver                                   0.63            2.51      4.00
 
   3) Calculate dipole and/or quadrupole moments
 
@@ -74,10 +77,6 @@
   -------------------------------------------------------------------------------------
   One-electron integrals (dipole)              0.00            0.00      1.00
   Time to calculte dipole and/or      
-  quadrupole                                   0.00            0.00      2.92
-  Hartree-Fock engine                          2.84           44.21     15.58
-
-
-  :: Total time
-  ================
-  Total time in eT                             2.88           44.43     15.41
+  quadrupole                                   0.00            0.00      1.00
+  Hartree-Fock engine                          0.79            3.12      3.97
+  Total time in eT                             0.81            3.15      3.90

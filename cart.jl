@@ -2,7 +2,7 @@ using OhMyREPL
 using LinearAlgebra
 using Optim
 
-const OMP_THREADS = 16
+const OMP_THREADS = 4
 
 include("get_matrix.jl")
 include("get_dipole.jl")
@@ -31,6 +31,10 @@ end memory
 method
     qed-hf
 end method
+
+solver scf
+    restart
+end solver scf
 
 qed
     modes:        1
@@ -61,8 +65,12 @@ function write_inp(inp, name)
 end
 
 function run_inp(name)
-    run(`/home/marcus/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(OMP_THREADS)`)
+    run(`/home/marcus/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(OMP_THREADS) --scratch ./scratch -ks`)
     nothing
+end
+
+function delete_scratch()
+    rm("./scratch/"; recursive=true)
 end
 
 function make_runner_func(name, freq, pol, coup, atoms, basis)
@@ -126,6 +134,35 @@ function write_xyz(filename, atoms, r)
     end
 end
 
+################## FIXED CENTER ###########
+
+function shift_by_first(r)
+    r2 = r[:, 2:end]
+    for i in 1:size(r2, 2)
+        @views r2[:, i] -= r[:, 1]
+    end
+    r2
+end
+
+function pad_3zeros(r)
+    hcat([0.0, 0.0, 0.0], r)
+end
+
+function fix_center_fg!(fg!)
+    function fixed_fg!(e, G, r)
+        rl = pad_3zeros(r)
+        Gl = if !isnothing(G)
+            pad_3zeros(G)
+        else
+            nothing
+        end
+
+        e = fg!(e, Gl, rl)
+        copyto!(G, @view Gl[:, 2:end])
+        e
+    end
+end
+
 ################## TESTS ##################
 
 function test_h2o()
@@ -146,6 +183,35 @@ function test_h2o()
     fg! = make_e_and_grad_func(rf)
 
     optimize(Optim.only_fg!(fg!), r, BFGS())
+end
+
+function test_h2o_fixed()
+    atoms = "OHH"
+    basis = "cc-pvdz"
+    r = Float64[
+        0.0 0.563701 0.563701
+        0.0 -0.755684 0.755684
+        0.0 0.0 0.0
+    ]
+    r = shift_by_first(r)
+
+    freq = 0.5
+    pol = [0, 1, 1]
+    pol = pol / norm(pol)
+    coup = 0.9
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+
+    fg! = fix_center_fg!(make_e_and_grad_func(rf))
+
+    o = optimize(Optim.only_fg!(fg!), r, BFGS())
+
+    d = find_dipole(atoms, basis, pad_3zeros(o.minimizer))
+    d = d / norm(d)
+    @show d
+    @show d ⋅ pol
+
+    o
 end
 
 function test_h2o_2()
@@ -217,6 +283,7 @@ function test_water_dimer()
     fg! = make_e_and_grad_func(rf)
 
     o = optimize(Optim.only_fg!(fg!), r, BFGS())
+    delete_scratch()
 
     d = find_dipole(atoms, basis, o.minimizer)
     d = d / norm(d)
