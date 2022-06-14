@@ -2,7 +2,7 @@ using OhMyREPL
 using LinearAlgebra
 using Plots
 
-const OMP_THREADS = 4
+const OMP_THREADS = 8
 
 include("../get_matrix.jl")
 
@@ -72,7 +72,9 @@ function run_inp(name)
 end
 
 function delete_scratch()
-    rm("./scratch/"; recursive=true)
+    if isdir("./scratch/")
+        rm("./scratch/"; recursive=true)
+    end
 end
 
 function make_runner_func(name, freq, pol, coup, atoms, basis)
@@ -342,7 +344,7 @@ function test_2h2o()
     rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
 
     e_grad_func = make_e_and_grad_func(rf)
-    open("md/2h2o_anims/$(coup)_$basis.xyz", "a") do io
-        do_md(io, 10, 50.0, atoms, e_grad_func, r)
+    open("md/2h2o_anims/$(coup)_$basis.xyz", "w") do io
+        do_md(io, 10, 10.0, atoms, e_grad_func, r)
     end
 end
