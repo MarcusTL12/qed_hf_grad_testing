@@ -16,11 +16,11 @@
 
   Description                                 wall[s]         cpu[s]    cpu/wall
   -------------------------------------------------------------------------------------
-  One-electron integrals (overlap)             0.00            0.00      2.82
+  One-electron integrals (overlap)             0.01            0.12     11.16
   Cholesky decomposition of AO        
-  overlap                                      0.00            0.00      1.00
-  Time initializing AO tool                    0.03            0.04      1.64
-  One-electron integrals (overlap)             0.00            0.00      0.75
+  overlap                                      0.02            0.32     15.95
+  Time initializing AO tool                    0.06            0.48      7.96
+  One-electron integrals (overlap)             0.00            0.00      1.02
   One-electron integrals (dipole)              0.00            0.00      0.99
 
   :: Hartree-Fock engine
@@ -32,35 +32,35 @@
   -------------------------------------------------------------------------------------
   One-electron integrals              
   (hamiltonian)                                0.00            0.00      1.00
-  AO G construction                            0.02            0.16      6.91
-  SCF diagonalization                          0.00            0.01     22.00
-  SCF iteration                                0.03            0.20      7.88
-  AO G construction                            0.02            0.13      5.52
-  SCF diagonalization                          0.00            0.00      1.00
-  SCF iteration                                0.02            0.13      5.33
-  AO G construction                            0.02            0.23      9.54
-  SCF diagonalization                          0.00            0.00      1.00
-  SCF iteration                                0.03            0.24      9.20
-  AO G construction                            0.02            0.16      6.93
-  SCF diagonalization                          0.00            0.00      1.00
-  SCF iteration                                0.02            0.16      6.71
-  AO G construction                            0.02            0.16      7.30
-  SCF diagonalization                          0.00            0.00      1.00
-  SCF iteration                                0.02            0.17      7.33
-  AO G construction                            0.02            0.16      7.22
-  SCF diagonalization                          0.00            0.00      1.00
-  SCF iteration                                0.02            0.16      6.93
-  AO G construction                            0.02            0.16      7.84
-  SCF diagonalization                          0.00            0.00      1.00
-  SCF iteration                                0.02            0.16      7.49
-  AO G construction                            0.02            0.16      8.88
-  SCF diagonalization                          0.00            0.00      1.00
-  SCF iteration                                0.02            0.16      8.39
-  AO G construction                            0.02            0.16      9.22
-  SCF diagonalization                          0.00            0.00      1.00
-  SCF iteration                                0.02            0.16      8.83
-  AO G construction                            0.02            0.16      9.61
-  SCF iteration                                0.02            0.16      9.32
-  SCF solver                                   0.22            1.76      7.91
-  Hartree-Fock engine                          0.43            3.38      7.94
-  Total time in eT                             0.45            3.42      7.53
+  AO G construction                            0.05            0.72     14.56
+  SCF diagonalization                          0.00            0.01      8.87
+  SCF iteration                                0.06            0.76     13.59
+  AO G construction                            0.04            0.63     14.81
+  SCF diagonalization                          0.00            0.00      1.92
+  SCF iteration                                0.05            0.66     13.73
+  AO G construction                            0.04            0.62     15.18
+  SCF diagonalization                          0.00            0.00      2.32
+  SCF iteration                                0.05            0.64     13.71
+  AO G construction                            0.04            0.56     14.43
+  SCF diagonalization                          0.00            0.00      2.04
+  SCF iteration                                0.04            0.60     13.41
+  AO G construction                            0.04            0.58     15.81
+  SCF diagonalization                          0.00            0.00      1.80
+  SCF iteration                                0.04            0.60     14.06
+  AO G construction                            0.04            0.56     15.74
+  SCF diagonalization                          0.00            0.00      2.16
+  SCF iteration                                0.04            0.58     13.90
+  AO G construction                            0.03            0.54     15.45
+  SCF diagonalization                          0.00            0.00      1.89
+  SCF iteration                                0.04            0.55     13.68
+  AO G construction                            0.03            0.45     14.36
+  SCF diagonalization                          0.00            0.00      2.47
+  SCF iteration                                0.04            0.46     12.57
+  AO G construction                            0.03            0.43     14.71
+  SCF diagonalization                          0.00            0.03     35.78
+  SCF iteration                                0.04            0.48     13.51
+  AO G construction                            0.03            0.37     13.63
+  SCF iteration                                0.05            0.69     13.52
+  SCF solver                                   0.44            6.03     13.56
+  Hartree-Fock engine                          0.85           12.27     14.47
+  Total time in eT                             0.91           12.77     14.02

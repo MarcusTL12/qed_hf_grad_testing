@@ -2,7 +2,7 @@ using OhMyREPL
 using LinearAlgebra
 using Plots
 
-const OMP_THREADS = 8
+const OMP_THREADS = 16
 
 include("../get_matrix.jl")
 
@@ -345,6 +345,34 @@ function test_2h2o()
 
     e_grad_func = make_e_and_grad_func(rf)
     open("md/2h2o_anims/$(coup)_$basis.xyz", "w") do io
+        do_md(io, 10, 10.0, atoms, e_grad_func, r)
+    end
+end
+
+function test_3h2o()
+    atoms = split_atoms("OHHOHHOHH")
+    basis = "cc-pvdz"
+    r = Float64[
+        -1.99995 1.33519 0.00206
+        -1.03334 1.26848 0.01524
+        -2.29042 0.64850 0.62097
+        1.37734 0.83744 0.08635
+        2.33328 0.78267 -0.06307
+        1.17761 0.05034 0.61503
+        1.37730 4.83740 0.08630
+        2.33330 4.78270 -0.06310
+        1.17760 4.05030 0.61500
+    ]' * Å2B
+
+    freq = 0.5
+    pol = [0, 1, 0]
+    pol = pol / norm(pol)
+    coup = 0.1
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+
+    e_grad_func = make_e_and_grad_func(rf)
+    open("md/3h2o_anims/$(coup)_$basis.xyz", "w") do io
         do_md(io, 10, 10.0, atoms, e_grad_func, r)
     end
 end
