@@ -5,6 +5,7 @@ using Plots
 include("../get_matrix.jl")
 
 const Å2B = 1.8897261245650618
+const kB = 3.166811563e-6
 
 function make_inp_func(freq, pol, coup, atoms, basis)
     function make_inp(r)
@@ -388,7 +389,7 @@ function test_2h2o()
     pol = pol / norm(pol)
     coup = 0.1
 
-    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 4)
 
     e_grad_func = make_e_and_grad_func(rf)
     open("md/2h2o_anims/$(coup)_$basis.xyz", "w") do io
