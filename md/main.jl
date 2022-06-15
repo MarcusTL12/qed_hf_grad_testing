@@ -2,7 +2,7 @@ using OhMyREPL
 using LinearAlgebra
 using Plots
 
-const OMP_THREADS = 16
+const OMP_THREADS = 4
 
 include("../get_matrix.jl")
 
@@ -157,7 +157,7 @@ function write_atoms(io::IO, atoms, r, v)
 end
 
 function calc_kin_e(masses, v)
-    sum(0.5 * m * norm(vc)^2 for (m, vc) in zip(masses, eachcol(v)))
+    sum(0.5 * m * (vc ⋅ vc) for (m, vc) in zip(masses, eachcol(v)))
 end
 
 function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r)); add_first=true, t0=0.0)
@@ -172,7 +172,12 @@ function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r)); ad
 
     if add_first
         println(io, length(atoms))
-        println(io, "i = ", 0, ", t = ", t, ", V = ", V, ", K = ", K)
+        println(io, "i = ", 0, "; t = ", t, "; V = ", V, "; K = ", K,
+            "; qed-freq = ", e_grad_func.runner_func.inp_func.freq,
+            "; qed-pol = ", e_grad_func.runner_func.inp_func.pol,
+            "; qed-coup = ", e_grad_func.runner_func.inp_func.coup,
+            "; basis = ", e_grad_func.runner_func.inp_func.basis,
+            "; Δt = ", Δt)
         write_atoms(io, atoms, r, v)
     end
 
@@ -190,16 +195,27 @@ function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r)); ad
         K = calc_kin_e(masses, v)
 
         println(io, length(atoms))
-        println(io, "i = ", i, ", t = ", t, ", V = ", V, ", K = ", K)
+        println(io, "i = ", i, "; t = ", t, "; V = ", V, "; K = ", K,
+            "; qed-freq = ", e_grad_func.runner_func.inp_func.freq,
+            "; qed-pol = ", e_grad_func.runner_func.inp_func.pol,
+            "; qed-coup = ", e_grad_func.runner_func.inp_func.coup,
+            "; basis = ", e_grad_func.runner_func.inp_func.basis,
+            "; Δt = ", Δt)
         write_atoms(io, atoms, r, v)
     end
 end
 
 function get_last_conf(filename)
+    t = 0.0
+    freq = 0.0
+    pol = ""
+    coup = 0.0
+    basis = ""
+    Δt = 0.0
+
     atoms = String[]
     r = Float64[]
     v = Float64[]
-    t = 0.0
 
     open(filename) do io
         lines = Iterators.Stateful(eachline(io))
@@ -210,7 +226,15 @@ function get_last_conf(filename)
             v = Float64[]
 
             n_atm = parse(Int, popfirst!(lines))
-            t = parse(Float64, split(split(popfirst!(lines), ", ")[2], " = ")[2])
+            l = popfirst!(lines)
+            ls = split(l, "; ")
+
+            t = parse(Float64, split(ls[2], " = ")[2])
+            freq = parse(Float64, split(ls[5], " = ")[2])
+            pol = split(ls[6], " = ")[2]
+            coup = parse(Float64, split(ls[7], " = ")[2])
+            basis = split(ls[8], " = ")[2]
+            Δt = parse(Float64, split(ls[9], " = ")[2])
 
             for _ in 1:n_atm
                 l = popfirst!(lines)
@@ -222,11 +246,36 @@ function get_last_conf(filename)
         end
     end
 
-    atoms, reshape(r, 3, length(r) ÷ 3) * Å2B, reshape(v, 3, length(v) ÷ 3) * Å2B, t
+    atoms,
+    reshape(r, 3, length(r) ÷ 3) * Å2B,
+    reshape(v, 3, length(v) ÷ 3) * Å2B,
+    t,
+    freq,
+    eval(Meta.parse(pol)),
+    coup,
+    basis,
+    Δt
 end
 
-function resume_md(filename, n_steps, Δt, freq, pol, coup, basis)
-    atoms, r, v, t = get_last_conf(filename)
+function resume_md(filename, n_steps;
+    Δt=nothing, freq=nothing, pol=nothing, coup=nothing, basis=nothing)
+    atoms, r, v, t, freq_l, pol_l, coup_l, basis_l, Δt_l = get_last_conf(filename)
+
+    if isnothing(freq)
+        freq = freq_l
+    end
+    if isnothing(pol)
+        pol = pol_l
+    end
+    if isnothing(coup)
+        coup = coup_l
+    end
+    if isnothing(basis)
+        basis = basis_l
+    end
+    if isnothing(Δt)
+        Δt = Δt_l
+    end
 
     pol /= norm(pol)
     rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
@@ -250,7 +299,7 @@ function get_tVK(filename)
         while !isempty(lines)
             n_atm = parse(Int, popfirst!(lines))
             l = popfirst!(lines)
-            ls = split(l, ", ")
+            ls = split(l, "; ")
             t, V, K = [parse(Float64, split(ls[i], " = ")[2]) for i in 2:4]
             push!(ts, t)
             push!(Vs, V)
@@ -374,5 +423,45 @@ function test_3h2o()
     e_grad_func = make_e_and_grad_func(rf)
     open("md/3h2o_anims/$(coup)_$basis.xyz", "w") do io
         do_md(io, 10, 10.0, atoms, e_grad_func, r)
+    end
+end
+
+function test_7h2o()
+    atoms = split_atoms("OHHOHHOHHOHHOHHOHHOHH")
+    basis = "cc-pvdz"
+    r = Float64[
+        -2.76420 -0.72774 -1.45990
+        -2.21757 -0.06831 -0.95981
+        -2.73768 -0.31471 -2.34353
+        -1.22859 1.09937 -0.13416
+        -0.44342 0.54547 0.12127
+        -0.82078 1.98081 -0.02962
+        -5.18189 0.42640 0.26551
+        -4.61686 -0.26208 -0.13692
+        -6.00859 -0.04387 0.45657
+        -2.11075 -3.14665 -0.38463
+        -2.32780 -2.29126 -0.83165
+        -2.99498 -3.54743 -0.33553
+        0.49472 -2.93885 0.29290
+        0.73698 -3.88059 0.29522
+        -0.47329 -3.01635 0.09410
+        -3.63850 2.67099 0.09481
+        -2.90992 2.02140 0.11762
+        -4.40376 2.06407 0.20872
+        1.00864 -0.29512 0.33482
+        1.98068 -0.32415 0.31304
+        0.81598 -1.26755 0.37072
+    ]' * Å2B
+
+    freq = 0.5
+    pol = [0, 1, 0]
+    pol = pol / norm(pol)
+    coup = 0.01
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+
+    e_grad_func = make_e_and_grad_func(rf)
+    open("md/many_h2o/7h2o.xyz", "w") do io
+        do_md(io, 10, 20.0, atoms, e_grad_func, r)
     end
 end
