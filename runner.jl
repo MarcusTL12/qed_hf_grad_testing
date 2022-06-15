@@ -2,4 +2,4 @@
 
 include("md/main.jl")
 
-@time resume_md("md/many_h2o/10h2o_free.xyz", 100, 44)
+@time resume_md("md/many_h2o/10h2o_free.xyz", 100, 40)
