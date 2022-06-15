@@ -2,8 +2,6 @@ using OhMyREPL
 using LinearAlgebra
 using Plots
 
-const OMP_THREADS = 42
-
 include("../get_matrix.jl")
 
 const Å2B = 1.8897261245650618
@@ -66,8 +64,8 @@ function write_inp(inp, name)
     end
 end
 
-function run_inp(name)
-    run(`$(homedir())/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(OMP_THREADS) --scratch ./scratch -ks`)
+function run_inp(name, omp)
+    run(`$(homedir())/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
     nothing
 end
 
@@ -77,13 +75,13 @@ function delete_scratch()
     end
 end
 
-function make_runner_func(name, freq, pol, coup, atoms, basis)
+function make_runner_func(name, freq, pol, coup, atoms, basis, omp)
     delete_scratch()
     inp_func = make_inp_func(freq, pol, coup, atoms, basis)
     function runner_func(r)
         inp = inp_func(r)
         write_inp(inp, name)
-        run_inp(name)
+        run_inp(name, omp)
     end
 end
 
@@ -257,7 +255,7 @@ function get_last_conf(filename)
     Δt
 end
 
-function resume_md(filename, n_steps;
+function resume_md(filename, n_steps, omp;
     Δt=nothing, freq=nothing, pol=nothing, coup=nothing, basis=nothing)
     atoms, r, v, t, freq_l, pol_l, coup_l, basis_l, Δt_l = get_last_conf(filename)
 
@@ -278,7 +276,7 @@ function resume_md(filename, n_steps;
     end
 
     pol /= norm(pol)
-    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, omp)
 
     e_grad_func = make_e_and_grad_func(rf)
 
@@ -341,7 +339,7 @@ function test_h2o()
     pol = pol / norm(pol)
     coup = 0.1
 
-    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 4)
 
     e_grad_func = make_e_and_grad_func(rf)
 
@@ -364,7 +362,7 @@ function test_h2o_wobble()
     pol = pol / norm(pol)
     coup = 0.0
 
-    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 4)
 
     e_grad_func = make_e_and_grad_func(rf)
 
@@ -418,7 +416,7 @@ function test_3h2o()
     pol = pol / norm(pol)
     coup = 0.1
 
-    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 4)
 
     e_grad_func = make_e_and_grad_func(rf)
     open("md/3h2o_anims/$(coup)_$basis.xyz", "w") do io
@@ -458,7 +456,7 @@ function test_7h2o()
     pol = pol / norm(pol)
     coup = 0.01
 
-    rf = make_runner_func("grad", freq, pol, coup, atoms, basis)
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 4)
 
     e_grad_func = make_e_and_grad_func(rf)
     open("md/many_h2o/7h2o.xyz", "w") do io
