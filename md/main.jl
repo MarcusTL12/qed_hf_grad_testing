@@ -66,6 +66,9 @@ function write_inp(inp, name)
 end
 
 function run_inp(name, omp)
+    if isnothing(omp)
+        omp = parse(Int, read("omp.txt", String))
+    end
     run(`$(homedir())/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
     nothing
 end
@@ -256,8 +259,8 @@ function get_last_conf(filename)
     Δt
 end
 
-function resume_md(filename, n_steps, omp;
-    Δt=nothing, freq=nothing, pol=nothing, coup=nothing, basis=nothing)
+function resume_md(filename, n_steps;
+    Δt=nothing, freq=nothing, pol=nothing, coup=nothing, basis=nothing, omp=nothing)
     atoms, r, v, t, freq_l, pol_l, coup_l, basis_l, Δt_l = get_last_conf(filename)
 
     if isnothing(freq)
