@@ -292,6 +292,7 @@ function get_tVK(filename)
     ts = Float64[]
     Vs = Float64[]
     Ks = Float64[]
+    n_atm = 0
     open(filename) do io
         lines = Iterators.Stateful(eachline(io))
 
@@ -309,7 +310,7 @@ function get_tVK(filename)
             end
         end
     end
-    ts, Vs, Ks
+    ts, Vs, Ks, n_atm
 end
 
 function plot_tVK(filename)
@@ -322,6 +323,18 @@ function plot_tVK(filename)
     plot(ts, Vs; label="Potential")
     plot!(ts, Ks; label="Kinetic")
     plot!(ts, Vs + Ks; label="Total")
+end
+
+function calculate_T_instant(Ks, N_atm)
+    2Ks / (kB * 3(N_atm - 1))
+end
+
+function plot_T(filename)
+    ts, _, Ks, n_atm = get_tVK(filename)
+
+    Ts = calculate_T_instant(Ks, n_atm)
+
+    plot(ts, Ts; ylabel="T [K]")
 end
 
 ############ TESTS ###########
