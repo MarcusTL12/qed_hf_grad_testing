@@ -2,7 +2,7 @@ using OhMyREPL
 using LinearAlgebra
 using Plots
 
-const OMP_THREADS = 38
+const OMP_THREADS = 42
 
 include("../get_matrix.jl")
 
