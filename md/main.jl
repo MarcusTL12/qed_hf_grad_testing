@@ -2,7 +2,7 @@ using OhMyREPL
 using LinearAlgebra
 using Plots
 
-const OMP_THREADS = 4
+const OMP_THREADS = 38
 
 include("../get_matrix.jl")
 
@@ -67,7 +67,7 @@ function write_inp(inp, name)
 end
 
 function run_inp(name)
-    run(`/home/marcus/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(OMP_THREADS) --scratch ./scratch -ks`)
+    run(`$(homedir())/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(OMP_THREADS) --scratch ./scratch -ks`)
     nothing
 end
 
