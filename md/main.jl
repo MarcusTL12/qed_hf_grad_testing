@@ -1,6 +1,7 @@
 using OhMyREPL
 using LinearAlgebra
 using Plots
+using DSP
 
 include("../get_matrix.jl")
 
@@ -265,8 +266,10 @@ function get_last_conf(filename)
 end
 
 function resume_md(filename, n_steps;
-    Δt=nothing, freq=nothing, pol=nothing, coup=nothing, basis=nothing, omp=nothing)
+    Δt=nothing, freq=nothing, pol=nothing, coup=nothing, basis=nothing, omp=nothing, v_scale=1.0)
     atoms, r, v, t, freq_l, pol_l, coup_l, basis_l, Δt_l = get_last_conf(filename)
+
+    v *= v_scale
 
     if isnothing(freq)
         freq = freq_l
@@ -328,7 +331,7 @@ function plot_tVK(filename)
     @show E0
     Vs .-= E0
 
-    plot(ts, Vs; label="Potential")
+    plot(ts, Vs; label="Potential", leg=:bottomleft)
     plot!(ts, Ks; label="Kinetic")
     plot!(ts, Vs + Ks; label="Total")
 end
@@ -352,6 +355,34 @@ function compare_T(filenames)
         ts, _, Ks, n_atm = get_tVK(filename)
         Ts = calculate_T_instant(Ks, n_atm)
         plot!(ts, Ts; label="$i")
+    end
+    plot!()
+end
+
+function calc_T_window_avg(Ts, n)
+    w = ones(Float64, n) / n
+
+    conv(Ts, w)
+end
+
+function plot_T_window_avg(filename, n)
+    ts, _, Ks, n_atm = get_tVK(filename)
+
+    Ts = calculate_T_instant(Ks, n_atm)
+
+    T_avg = calc_T_window_avg(Ts, n)
+
+    plot(ts, T_avg[1:length(ts)]; leg=false)
+end
+
+function compare_T_window_avg(filenames, n)
+    plot(; ylabel="T [K]", leg=:bottomright)
+
+    for (i, filename) in enumerate(filenames)
+        ts, _, Ks, n_atm = get_tVK(filename)
+        Ts = calculate_T_instant(Ks, n_atm)
+        T_avg = calc_T_window_avg(Ts, n)
+        plot!(ts, T_avg[1:length(ts)]; label="$i")
     end
     plot!()
 end
