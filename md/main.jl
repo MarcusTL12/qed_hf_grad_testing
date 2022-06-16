@@ -204,6 +204,11 @@ function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r)); ad
             "; basis = ", e_grad_func.runner_func.inp_func.basis,
             "; Δt = ", Δt)
         write_atoms(io, atoms, r, v)
+
+        if isfile("stop")
+            println("Stopping MD!")
+            break
+        end
     end
 end
 
@@ -338,6 +343,17 @@ function plot_T(filename)
     Ts = calculate_T_instant(Ks, n_atm)
 
     plot(ts, Ts; ylabel="T [K]")
+end
+
+function compare_T(filenames)
+    plot(; ylabel="T [K]", leg=:bottomright)
+
+    for (i, filename) in enumerate(filenames)
+        ts, _, Ks, n_atm = get_tVK(filename)
+        Ts = calculate_T_instant(Ks, n_atm)
+        plot!(ts, Ts; label="$i")
+    end
+    plot!()
 end
 
 ############ TESTS ###########
