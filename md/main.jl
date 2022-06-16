@@ -362,7 +362,7 @@ end
 function calc_T_window_avg(Ts, n)
     w = ones(Float64, n) / n
 
-    conv(Ts, w)
+    conv(Ts, w)[1:length(Ts)]
 end
 
 function plot_T_window_avg(filename, n)
@@ -372,7 +372,7 @@ function plot_T_window_avg(filename, n)
 
     T_avg = calc_T_window_avg(Ts, n)
 
-    plot(ts, T_avg[1:length(ts)]; leg=false)
+    plot(ts, T_avg; leg=false)
 end
 
 function compare_T_window_avg(filenames, n)
@@ -382,7 +382,7 @@ function compare_T_window_avg(filenames, n)
         ts, _, Ks, n_atm = get_tVK(filename)
         Ts = calculate_T_instant(Ks, n_atm)
         T_avg = calc_T_window_avg(Ts, n)
-        plot!(ts, T_avg[1:length(ts)]; label="$i")
+        plot!(ts, T_avg; label="$i")
     end
     plot!()
 end
