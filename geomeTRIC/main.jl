@@ -1,6 +1,62 @@
 using PyCall
+using OhMyREPL
+using LinearAlgebra
 
-py"""
-import geomeTRIC/engine
-"""
+pushfirst!(pyimport("sys")."path", "./geomeTRIC")
 
+engine = pyimport("engine")
+
+include("../common.jl")
+
+
+function test_engine()
+    atoms = split_atoms("OHHOHH")
+    basis = "cc-pvdz"
+    r = Float64[
+        0.00074 -0.00014 0.00003
+        0.03041 0.10161 0.97727
+        -0.27764 -0.92380 -0.08655
+        -0.00484 0.00131 2.75024
+        0.78062 -0.00539 3.32392
+        -0.68819 0.38765 3.32456
+    ]' |> copy
+
+    freq = 0.5
+    pol = [0.1, 1, 0.1]
+    pol = pol / norm(pol)
+    coup = 0.1
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 8)
+
+    egf = make_e_and_grad_func(rf)
+
+    qed_hf_engine = engine.qed_hf_engine(egf, atoms, r)
+
+    qed_hf_engine.calc_new(r, nothing)
+end
+
+function test_engine2()
+    atoms = split_atoms("OHHOHH")
+    basis = "cc-pvdz"
+    r = Float64[
+        0.00074 -0.00014 0.00003
+        0.03041 0.10161 0.97727
+        -0.27764 -0.92380 -0.08655
+        -0.00484 0.00131 2.75024
+        0.78062 -0.00539 3.32392
+        -0.68819 0.38765 3.32456
+    ]' |> copy
+
+    freq = 0.5
+    pol = [0.1, 1, 0.1]
+    pol = pol / norm(pol)
+    coup = 0.1
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 8)
+
+    egf = make_e_and_grad_func(rf)
+
+    qed_hf_engine = engine.qed_hf_engine(egf, atoms, r)
+
+    engine.run_opt(qed_hf_engine)
+end
