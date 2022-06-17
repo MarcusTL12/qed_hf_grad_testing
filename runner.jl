@@ -3,5 +3,5 @@
 include("md/main.jl")
 
 # @time resume_md("md/many_h2o/10h2o_0.1_temp.xyz", 100; v_scale=1.1)
-@time resume_md("md/many_h2o/10h2o_free_temp.xyz", 1000; v_scale=1.14)
+@time resume_md("md/many_h2o/10h2o_free_temp.xyz", 1000; v_scale=1.04)
 
