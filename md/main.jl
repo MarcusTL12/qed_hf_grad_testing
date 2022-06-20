@@ -266,6 +266,21 @@ function compare_T_window_avg(filenames, n)
     plot!()
 end
 
+function compare_E(filenames)
+    plot(; ylabel="E", leg=:bottomright)
+
+    for (i, filename) in enumerate(filenames)
+        ts, Vs, Ks, n_atm = get_tVK(filename)
+
+        E0 = Vs[1] + Ks[1]
+        Vs .-= E0
+
+        plot!(Vs + Ks; label="$i")
+    end
+
+    plot!()
+end
+
 ############ TESTS ###########
 
 function test_h2o()

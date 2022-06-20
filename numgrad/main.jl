@@ -1,12 +1,7 @@
-include("get_matrix.jl")
+include("../get_matrix.jl")
 
-const Å2B = 1.8897261245650618
-const kB = 3.166811563e-6
-
-function make_inp_func(freq, pol, coup, atoms, basis)
+function make_inp_func(atoms, basis)
     function make_inp(r)
-        r /= Å2B
-        r = reshape(r, 3, length(r) ÷ 3)
         io = IOBuffer()
 
         print(
@@ -30,15 +25,14 @@ method
 end method
 
 solver scf
-    restart
     gradient threshold: 1d-10
 end solver scf
 
 qed
-    modes:        1
-    frequency:    {$freq}
-    polarization: {$(pol[1]), $(pol[2]), $(pol[3])}
-    coupling:     {$coup}
+    modes:        2
+    frequency:    {0.5, 0.5}
+    wavevector:   {0, 1, 0}
+    coupling:     {0.05, 0.05}
 end qed
 
 geometry
@@ -66,7 +60,7 @@ function run_inp(name, omp)
     if isnothing(omp)
         omp = parse(Int, read("omp.txt", String))
     end
-    run(`$(homedir())/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
+    run(`$(homedir())/eT_clean/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
     nothing
 end
 
@@ -76,9 +70,9 @@ function delete_scratch()
     end
 end
 
-function make_runner_func(name, freq, pol, coup, atoms, basis, omp)
+function make_runner_func(name, atoms, basis, omp)
     delete_scratch()
-    inp_func = make_inp_func(freq, pol, coup, atoms, basis)
+    inp_func = make_inp_func(atoms, basis)
     function runner_func(r)
         inp = inp_func(r)
         write_inp(inp, name)
@@ -93,40 +87,25 @@ function get_tot_energy(name)
     parse(Float64, m.captures[1])
 end
 
-function make_tot_energy_function(runner_func)
-    function energy_function(r)
-        runner_func(r)
-        get_tot_energy(runner_func.name)
+function make_ef(rf)
+    function ef(r)
+        rf(r)
+        get_tot_energy(rf.name)
     end
 end
 
-function make_grad_func(runner_func)
-    function grad_function(r)
-        runner_func(r)
-        get_matrix("QEDHF Molecular Gradient", runner_func.name)
+function find_grad(ef, r, h)
+    grad = zeros(size(r))
+    for i in 1:size(r, 1), j in 1:size(r, 2)
+        dr = zeros(size(r))
+        dr[i, j] = h
+        grad[i, j] = (ef(r + dr) - ef(r - dr)) / 2h / 1.8897261245650618
     end
-end
-
-function make_e_and_grad_func(runner_func)
-    function e_and_grad(r)
-        runner_func(r)
-
-        get_tot_energy(runner_func.name),
-        get_matrix("QEDHF Molecular Gradient", runner_func.name)
-    end
+    grad
 end
 
 const atom_reg = r"[A-Z][a-z]?"
 
 function split_atoms(atoms)
     [m.match for m in eachmatch(atom_reg, atoms)]
-end
-
-function write_xyz(filename, atoms, r)
-    open(filename, "w") do io
-        println(io, length(atoms), '\n')
-        for (i, a) in enumerate(atoms)
-            println(io, "$a    $(r[1, i]) $(r[2, i]) $(r[3, i])")
-        end
-    end
 end

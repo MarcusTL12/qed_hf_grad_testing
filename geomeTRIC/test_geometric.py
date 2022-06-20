@@ -1,9 +1,9 @@
+#!/usr/bin/env python
+
 import tempfile
 import numpy as np
 import geometric
 import geometric.molecule
-
-import addons
 
 Bohr = 0.52917721
 
@@ -30,7 +30,9 @@ class CustomEngine(geometric.engine.Engine):
         super(CustomEngine, self).__init__(molecule)
 
     def calc_new(self, coords, dirname):
+        print("Coords: \n", coords)
         energy, gradient = model(coords.reshape(-1,3))
+        print("E: ", energy, "\nGradient: \n", gradient, "\n")
         return {'energy': energy, 'gradient': gradient.ravel()}
 
 
@@ -42,10 +44,11 @@ def test_customengine():
                                (-0.9, 0.5, 0),
                               ))  # In Angstrom
                     ]
+    print("xyzs\n", molecule.xyzs)
     customengine = CustomEngine(molecule)
 
     tmpf = tempfile.mktemp()
-    m = geometric.optimize.run_optimizer(customengine=customengine, check=1, input=tmpf)
+    m = geometric.optimize.run_optimizer(customengine=customengine, check=1, input=tmpf, logIni='./log.ini')
 
     coords = m.xyzs[-1] / Bohr
     e = model(coords)[0]
