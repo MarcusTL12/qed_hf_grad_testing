@@ -31,6 +31,7 @@ end method
 
 solver scf
     restart
+    gradient threshold: 1d-10
 end solver scf
 
 qed
