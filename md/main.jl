@@ -30,11 +30,13 @@ function get_accl(masses, g)
     a
 end
 
-function write_atoms(io::IO, atoms, r, v)
+function write_atoms(io::IO, atoms, r, v, a)
     r /= Å2B
     v /= Å2B
-    for (a, rc, vc) in zip(atoms, eachcol(r), eachcol(v))
-        println(io, a, "    ", rc[1], " ", rc[2], " ", rc[3], " ", vc[1], " ", vc[2], " ", vc[3])
+    for (atm, rc, vc, ac) in zip(atoms, eachcol(r), eachcol(v), eachcol(a))
+        println(io, atm, "    ", rc[1], " ", rc[2], " ", rc[3],
+            " ", vc[1], " ", vc[2], " ", vc[3],
+            " ", ac[1], " ", ac[2], " ", ac[3])
     end
 end
 
@@ -42,11 +44,28 @@ function calc_kin_e(masses, v)
     sum(0.5 * m * (vc ⋅ vc) for (m, vc) in zip(masses, eachcol(v)))
 end
 
+function calculate_momentum(v, masses)
+    mom = zeros(Float64, 3)
+
+    for (i, vc) in enumerate(eachcol(v))
+        mom .+= vc * masses[i]
+    end
+
+    mom
+end
+
 function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r)); add_first=true, t0=0.0)
     masses = [atom_mass[a] for a in atoms]
 
     V, g = e_grad_func(r)
     a = get_accl(masses, g)
+
+    tot_mom = calculate_momentum(v, masses)
+    drift_v = tot_mom / sum(masses)
+
+    for vc in eachcol(v)
+        vc .-= drift_v
+    end
 
     K = calc_kin_e(masses, v)
 
@@ -60,7 +79,7 @@ function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r)); ad
             "; qed-coup = ", e_grad_func.runner_func.inp_func.coup,
             "; basis = ", e_grad_func.runner_func.inp_func.basis,
             "; Δt = ", Δt)
-        write_atoms(io, atoms, r, v)
+        write_atoms(io, atoms, r, v, a)
     end
 
     for i in 1:n_steps
@@ -74,6 +93,13 @@ function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r)); ad
 
         t += Δt
 
+        tot_mom = calculate_momentum(v, masses)
+        drift_v = tot_mom / sum(masses)
+
+        for vc in eachcol(v)
+            vc .-= drift_v
+        end
+
         K = calc_kin_e(masses, v)
 
         println(io, length(atoms))
@@ -83,7 +109,7 @@ function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r)); ad
             "; qed-coup = ", e_grad_func.runner_func.inp_func.coup,
             "; basis = ", e_grad_func.runner_func.inp_func.basis,
             "; Δt = ", Δt)
-        write_atoms(io, atoms, r, v)
+        write_atoms(io, atoms, r, v, a)
 
         if isfile("stop")
             println("Stopping MD!")
@@ -203,6 +229,39 @@ function get_tVK(filename)
     ts, Vs, Ks, n_atm
 end
 
+function get_rv(filename)
+    rs = Float64[]
+    vs = Float64[]
+    atoms = String[]
+
+    n_atm = 0
+    n_frames = 0
+
+    open(filename) do io
+        lines = Iterators.Stateful(eachline(io))
+
+        while !isempty(lines)
+            n_frames += 1
+            n_atm = parse(Int, popfirst!(lines))
+            popfirst!(lines)
+
+            atoms = String[]
+
+            for _ in 1:n_atm
+                l = popfirst!(lines)
+                ls = split(l)
+                push!(atoms, ls[1])
+                append!(rs, parse(Float64, n) for n in ls[2:4])
+                append!(vs, parse(Float64, n) for n in ls[5:7])
+            end
+        end
+    end
+
+    reshape(rs, 3, n_atm, n_frames),
+    reshape(vs, 3, n_atm, n_frames),
+    atoms
+end
+
 function plot_tVK(filename)
     ts, Vs, Ks = get_tVK(filename)
 
@@ -210,9 +269,24 @@ function plot_tVK(filename)
     @show E0
     Vs .-= E0
 
-    plot(ts, Vs; label="Potential", leg=:bottomleft)
-    plot!(ts, Ks; label="Kinetic")
-    plot!(ts, Vs + Ks; label="Total")
+    # plot(ts, Vs; label="Potential", leg=:bottomleft)
+    # plot!(ts, Ks; label="Kinetic")
+    # plot!(ts, Vs + Ks; label="Total")
+    plot(Vs; label="Potential", leg=:bottomleft)
+    plot!(Ks; label="Kinetic")
+    plot!(Vs + Ks; label="Total")
+end
+
+function plot_VK_overlay(filename; is=:)
+    ts, Vs, Ks = get_tVK(filename)
+
+    E0 = Vs[1] + Ks[1]
+    @show E0
+    Vs .-= E0
+
+    plot(eachindex(ts)[is], -Vs[is]; label="Potential", leg=:bottomleft)
+    plot!(eachindex(ts)[is], Ks[is]; label="Kinetic")
+    # plot!(ts, Vs + Ks; label="Total")
 end
 
 function calculate_T_instant(Ks, N_atm)
@@ -279,6 +353,109 @@ function compare_E(filenames)
     end
 
     plot!()
+end
+
+function calculate_total_momentum(filename)
+    _, vs, atoms = get_rv(filename)
+    masses = [atom_mass[a] for a in atoms]
+
+    moms = Float64[]
+
+    for f in 1:size(vs, 3)
+        append!(moms, calculate_momentum((@view vs[:, :, f]), masses))
+    end
+
+    reshape(moms, 3, size(vs, 3))
+end
+
+function calculate_center_of_mass_conf(r, atoms)
+    masses = [atom_mass[a] for a in atoms]
+
+    com = zeros(Float64, 3)
+
+    for (i, rc) in enumerate(eachcol(r))
+        com .+= rc * masses[i]
+    end
+
+    com / sum(masses)
+end
+
+function calculate_center_of_mass(filename)
+    rs, _, atoms = get_rv(filename)
+
+    coms = Float64[]
+
+    for f in 1:size(rs, 3)
+        append!(coms, calculate_center_of_mass_conf((@view rs[:, :, f]), atoms))
+    end
+
+    reshape(coms, 3, size(rs, 3))
+end
+
+function calculate_trans_E(filename)
+    _, _, atoms = get_rv(filename)
+    moms = calculate_total_momentum(filename)
+
+    mass = sum(atom_mass[a] for a in atoms)
+
+    Es = Float64[]
+
+    for mom in eachcol(moms)
+        push!(Es, mom'mom / (2 * mass))
+    end
+
+    Es
+end
+
+function calculate_ang_mom(r, v, com, atoms)
+    masses = [atom_mass[a] for a in atoms]
+
+    am = zeros(Float64, 3)
+
+    for (i, (rc, vc)) in enumerate(zip(eachcol(r), eachcol(v)))
+        am .+= ((rc - com) × vc) * masses[i]
+    end
+
+    am
+end
+
+function calculate_tot_ang_mom(filename)
+    rs, vs, atoms = get_rv(filename)
+    coms = calculate_center_of_mass(filename)
+
+    ams = Float64[]
+
+    for f in 1:size(rs, 3)
+        @views append!(ams, calculate_ang_mom(rs[:, :, f], vs[:, :, f], coms[:, f], atoms))
+    end
+
+    reshape(ams, 3, size(rs, 3))
+end
+
+function calc_mom_intertia(r, L, atoms)
+    masses = [atom_mass[a] for a in atoms]
+
+    I = 0.0
+
+    for (i, rc) in enumerate(eachcol(r))
+        I += masses[i] * (rc'rc - (L'rc)^2 / L'L)
+    end
+
+    I
+end
+
+function calculate_rot_energy(filename)
+    rs, _, atoms = get_rv(filename)
+    ams = calculate_tot_ang_mom(filename)
+
+    Es = Float64[]
+
+    for (f, L) in enumerate(eachcol(ams))
+        I = @views calc_mom_intertia(rs[:, :, f], L, atoms)
+        @views push!(Es, L'L / 2I)
+    end
+
+    Es
 end
 
 ############ TESTS ###########
