@@ -1,3 +1,5 @@
+using OhMyREPL
+
 include("../get_matrix.jl")
 
 function make_inp_func(atoms, basis)
@@ -94,20 +96,24 @@ function make_ef(rf)
     end
 end
 
-function find_grad(ef, r, h)
-    grad = zeros(size(r))
-    for i in 1:size(r, 1), j in 1:size(r, 2)
-        dr = zeros(size(r))
-        dr[i, j] = h
-        grad[i, j] = (ef(r + dr) - ef(r - dr)) / 2h / 1.8897261245650618
-    end
-    grad
+function find_grad2(ef, r, h, q, atm)
+    dr = zeros(size(r))
+    dr[q, atm] = h
+    (ef(r + dr) - ef(r - dr)) / 2h / 1.8897261245650618
 end
 
-function find_grad_dir(ef, r, h, atm, q)
+function find_grad4(ef, r, h, q, atm)
     dr = zeros(size(r))
     dr[q, atm] = h
     (-ef(r + 2dr) + 8ef(r + dr) - 8ef(r - dr) + ef(r - 2dr)) / 12h / 1.8897261245650618
+end
+
+function find_grad(ef, r, h; method=find_grad2)
+    grad = zeros(size(r))
+    for i in 1:size(r, 1), j in 1:size(r, 2)
+        grad[i, j] = method(ef, r, h, i, j)
+    end
+    grad
 end
 
 const atom_reg = r"[A-Z][a-z]?"

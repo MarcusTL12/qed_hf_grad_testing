@@ -1,0 +1,210 @@
+
+
+
+                     eT 1.8 - an electronic structure program
+
+  ------------------------------------------------------------------------
+   Author list in alphabetical order:
+  ------------------------------------------------------------------------
+   J. H. Andersen, A. Balbi, S. Coriani, S. D. Folkestad, T. Giovannini, 
+   L. Goletto, T. S. Haugland, A. Hutcheson, I-M. Høyvik, E. F. Kjønstad, 
+   H. Koch, R. Matveeva, T. Moitra, R. H. Myhre, A. C. Paul, S. Roet, 
+   E. Ronca, M. Scavino, A. K. Schnack-Petersen, A. S. Skeidsvoll, Å. 
+   H. Tveten
+  ------------------------------------------------------------------------
+   J. Chem. Phys. 152, 184103 (2020); https://doi.org/10.1063/5.0004713
+
+
+   This is eT 1.8.0 Ibiza (development)
+  ------------------------------------------------------------
+  Configuration date: 2022-06-17 11:16:56 UTC +02:00
+  Git branch:         qed_hf_grad_print
+  Git hash:           37adfe325db0ffbed4a70836f2617b53165a435b
+  Fortran compiler:   GNU 10.3.0
+  C compiler:         GNU 10.3.0
+  C++ compiler:       GNU 10.3.0
+  LAPACK type:        MKL
+  BLAS type:          MKL
+  64-bit integers:    ON
+  OpenMP:             ON
+  PCM:                OFF
+  Forced batching:    OFF
+  Runtime checks:     OFF
+  ------------------------------------------------------------
+
+
+  :: Input file
+  ================
+
+     Note: geometry section is excluded from this print
+
+     system
+         name: gradient
+         charge: 0
+     end system
+
+     do
+         ground state
+     end do
+
+     memory
+         available: 8
+     end memory
+
+     method
+         qed-hf
+     end method
+
+     solver scf
+         gradient threshold: 1d-10
+     end solver scf
+
+     qed
+         modes:        1
+         frequency:    {0.5}
+         polarization: {0.0, 1.0, 0.0}
+         coupling:     {0.1}
+     end qed
+
+
+  Calculation start:2022-06-22 10:03:16 UTC +02:00
+
+  Running on 8 OMP threads
+  Memory available for calculation: 8.000000 GB
+
+
+  :: QED-RHF wavefunction
+  =======================
+
+     ==============================================================================
+                                     Geometry (angstrom)
+     ==============================================================================
+        Atom           X                  Y                  Z         # in input
+     ==============================================================================
+        Basis: cc-pvdz
+        1  O     0.000000000000     0.000000000000     0.000000000000        1
+        2  H     1.000000000000     0.000000000000     0.000000000000        2
+        3  H     0.000000000000     1.000000000000     0.000000000000        3
+     ==============================================================================
+
+     ==============================================================================
+                                     Geometry (a.u.)
+     ==============================================================================
+        Atom           X                  Y                  Z         # in input
+     ==============================================================================
+        Basis: cc-pvdz
+        1  O     0.000000000000     0.000000000000     0.000000000000        1
+        2  H     1.889726124565     0.000000000000     0.000000000000        2
+        3  H     0.000000000000     1.889726124565     0.000000000000        3
+     ==============================================================================
+
+  - Cholesky decomposition of AO overlap to get linearly independent AOs:
+
+     Linear dependence threshold:             0.10E-05
+     Number of atomic orbitals:               24
+     Number of orthonormal atomic orbitals:   24
+
+  - Molecular orbital details:
+
+     Number of occupied orbitals:         5
+     Number of virtual orbitals:         19
+     Number of molecular orbitals:       24
+
+
+  Generating initial SAD density
+  ==============================
+
+
+  Determining reference state
+  ===========================
+
+  - Setting initial AO density to sad
+
+     Energy of initial guess:               -75.810898403240
+     Number of electrons in guess:           10.000000000000
+
+  - Screening and integral thresholds:
+
+     Coulomb screening threshold:    0.1000E-15
+     Exchange screening threshold:   0.1000E-13
+     ERI cutoff:                     0.1000E-15
+     One-electron integral  cutoff:  0.1000E-20
+     Cumulative Fock threshold:      0.1000E+01
+
+  - SCF solver settings:
+
+     Maximum iterations:                   100
+     Acceleration type:                   diis
+
+  - Convergence thresholds
+
+     Residual threshold:            0.1000E-09
+
+  - DIIS tool settings:
+
+     DIIS dimension:   8
+
+     Storage (solver scf_errors): memory
+     Storage (solver scf_parameters): memory
+
+  Iteration       Energy (a.u.)      Max(grad.)    Delta E (a.u.)
+  ---------------------------------------------------------------
+     1           -75.955580957805     0.8402E-01     0.7596E+02
+     2           -75.987074479566     0.5514E-01     0.3149E-01
+     3           -75.997985670108     0.4276E-02     0.1091E-01
+     4           -75.998214602036     0.1620E-02     0.2289E-03
+     5           -75.998240084167     0.2773E-03     0.2548E-04
+     6           -75.998241357590     0.6007E-04     0.1273E-05
+     7           -75.998241402574     0.7653E-05     0.4498E-07
+     8           -75.998241403916     0.2453E-05     0.1342E-08
+     9           -75.998241403967     0.1851E-06     0.5181E-10
+    10           -75.998241403968     0.3139E-07     0.3553E-12
+    11           -75.998241403968     0.7078E-08     0.0000E+00
+    12           -75.998241403968     0.2270E-08     0.2842E-13
+    13           -75.998241403968     0.8813E-09     0.1421E-13
+    14           -75.998241403968     0.8350E-10     0.7105E-13
+  ---------------------------------------------------------------
+  Convergence criterion met in 14 iterations!
+
+  - Summary of QED-RHF wavefunction energetics (a.u.):
+
+     HOMO-LUMO gap:                  0.679299384510
+     Nuclear repulsion energy:       8.841020169011
+     Electronic energy:            -84.839261572979
+     Total energy:                 -75.998241403968
+
+  - QED Parameters and properties
+
+     Optimize photons?   :    True
+     Complete basis?     :    False
+
+     Mode 1
+      Frequency          :    0.500000000000
+      Polarization       :    0.000000000000    1.000000000000    0.000000000000
+      Coupling
+       sqrt(1/eps V)     :    0.100000000000
+       Bilinear          :    0.050000000000
+       Quadratic         :    0.005000000000
+      Coherent state     :   -0.066698642829
+
+                            QEDHF Molecular Gradient
+  =================================================================================
+                1                         2                         3
+   1       -0.0684681867108150        0.0449073045276243        0.0235608821831911
+   2       -0.0763313877732395        0.0234622392921512        0.0528691484810883
+   3        0.0000000000000000       -0.0000000000000000        0.0000000000000000
+  =================================================================================
+
+  Peak memory usage during the execution of eT: 531.240 KB
+
+  Total wall time in eT (sec):              0.43397
+  Total cpu time in eT (sec):               2.08913
+
+  Calculation end:2022-06-22 10:03:16 UTC +02:00
+
+  - Implementation references:
+
+     eT: https://doi.org/10.1063/5.0004713
+     QED-HF: https://doi.org/10.1103/PhysRevX.10.041043
+
+  eT terminated successfully!

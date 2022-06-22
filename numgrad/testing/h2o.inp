@@ -1,0 +1,34 @@
+system
+    name: Gradient
+    charge: 0
+end system
+
+do
+    ground state
+end do
+
+memory
+    available: 8
+end memory
+
+method
+    qed-hf
+end method
+
+solver scf
+    gradient threshold: 1d-10
+end solver scf
+
+qed
+    modes:        1
+    frequency:    {0.5}
+    polarization: {0.0, 1.0, 0.0}
+    coupling:     {0.1}
+end qed
+
+geometry
+basis: cc-pvdz
+    O    0.0 0.0 0.0
+    H    1.0 0.0 0.0
+    H    0.0 1.0 0.0
+end geometry
