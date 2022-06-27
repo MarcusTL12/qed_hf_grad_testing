@@ -62,7 +62,8 @@ function run_inp(name, omp)
     if isnothing(omp)
         omp = parse(Int, read("omp.txt", String))
     end
-    run(`$(homedir())/eT_clean/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
+    # run(`$(homedir())/eT_clean/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
+    run(`$(homedir())/eT_qed_hf_grad_print/build_debug/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
     nothing
 end
 
