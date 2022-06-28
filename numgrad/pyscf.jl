@@ -13,7 +13,10 @@ end
 
 function make_hf_func(atoms, basis)
     function hf_func(r)
-        pyscf.scf.RHF(make_mol(atoms, r, basis)).run()
+        rhf = pyscf.scf.RHF(make_mol(atoms, r, basis))
+        rhf.conv_tol = 1e-16
+        rhf.max_cycle = 1000
+        rhf.run()
     end
 end
 

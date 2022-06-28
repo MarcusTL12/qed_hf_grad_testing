@@ -1,6 +1,6 @@
 using OhMyREPL
 
-include("../get_matrix.jl")
+include("../../get_matrix.jl")
 
 function make_inp_func(atoms, basis)
     function make_inp(r)
@@ -23,20 +23,13 @@ memory
 end memory
 
 method
-    qed-hf
+    hf
 end method
 
 solver scf
     gradient threshold: 1d-10
     max iterations: 1000
 end solver scf
-
-qed
-    modes:        1
-    frequency:    {0.5}
-    polarization: {0, 1, 0}
-    coupling:     {0.1}
-end qed
 
 geometry
 basis: $basis
@@ -64,7 +57,6 @@ function run_inp(name, omp)
         omp = parse(Int, read("omp.txt", String))
     end
     run(`$(homedir())/eT_clean/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
-    # run(`$(homedir())/eT_qed_hf_grad_print/build_debug/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
     nothing
 end
 
