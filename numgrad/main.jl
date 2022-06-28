@@ -19,7 +19,7 @@ do
 end do
 
 memory
-    available: 8
+    available: 128
 end memory
 
 method
@@ -28,13 +28,14 @@ end method
 
 solver scf
     gradient threshold: 1d-10
+    max iterations: 1000
 end solver scf
 
 qed
     modes:        1
     frequency:    {0.5}
     polarization: {0, 1, 0}
-    coupling:     {0.1}
+    coupling:     {0.0}
 end qed
 
 geometry
@@ -62,8 +63,8 @@ function run_inp(name, omp)
     if isnothing(omp)
         omp = parse(Int, read("omp.txt", String))
     end
-    # run(`$(homedir())/eT_clean/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
-    run(`$(homedir())/eT_qed_hf_grad_print/build_debug/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
+    run(`$(homedir())/eT_clean/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
+    # run(`$(homedir())/eT_qed_hf_grad_print/build_debug/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
     nothing
 end
 
