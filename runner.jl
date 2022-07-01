@@ -3,7 +3,16 @@
 # include("numgrad/main.jl")
 include("md/main.jl")
 
-@time resume_md("md/many_h2o/10h2o_0.1_fixed.xyz", 10000)
+let avg = get_avg_last_T("md/many_h2o/20h2o_0.1.xyz", 20)
+
+    while avg < 275
+        resume_md("md/many_h2o/20h2o_0.1.xyz", 50; v_scale=min(√(275 / avg), 1.2))
+        avg = get_avg_last_T("md/many_h2o/20h2o_0.1.xyz", 20)
+    end
+
+end
+
+# @time resume_md("md/many_h2o/20h2o_0.1.xyz", 1000)
 # @time resume_md("md/many_h2o/10h2o_free_temp.xyz", 20000; Δt=10.0)
 
 # rf = make_runner_func("grad", "OHH"^10, "aug-cc-pvtz", 44)
