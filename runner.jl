@@ -5,8 +5,12 @@ include("md/main.jl")
 
 let avg = get_avg_last_T("md/many_h2o/20h2o_0.1.xyz", 20)
 
-    while avg < 275
-        resume_md("md/many_h2o/20h2o_0.1.xyz", 50; v_scale=min(√(275 / avg), 1.2))
+    while true
+        if avg < 275
+            resume_md("md/many_h2o/20h2o_0.1.xyz", 50; v_scale=min(√(275 / avg), 1.2))
+        else
+            resume_md("md/many_h2o/20h2o_0.1.xyz", 50)
+        end
         avg = get_avg_last_T("md/many_h2o/20h2o_0.1.xyz", 20)
     end
 
