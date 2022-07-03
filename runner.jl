@@ -3,15 +3,21 @@
 # include("numgrad/main.jl")
 include("md/main.jl")
 
-let avg = get_avg_last_T("md/many_h2o/20h2o_0.1.xyz", 20)
+curfile = "md/many_h2o/20h2o_free.xyz"
 
-    while true
+resume_md(curfile, 50)
+
+let avg = get_avg_last_T(curfile, 20)
+
+    while !isfile("stop")
         if avg < 275
-            resume_md("md/many_h2o/20h2o_0.1.xyz", 50; v_scale=min(√(275 / avg), 1.2))
+            println("raising temp from $avg")
+            resume_md(curfile, 50; v_scale=min(√(275 / avg), 1.2))
         else
-            resume_md("md/many_h2o/20h2o_0.1.xyz", 50)
+            println("temp is fine")
+            resume_md(curfile, 50)
         end
-        avg = get_avg_last_T("md/many_h2o/20h2o_0.1.xyz", 20)
+        avg = get_avg_last_T(curfile, 20)
     end
 
 end
