@@ -333,6 +333,7 @@ function plot_T_window_avg(filename, n)
     T_avg = calc_T_window_avg(Ts, n)
 
     @show last(T_avg)
+    @show extrema(T_avg[end-n + 1:end])
 
     plot(ts, T_avg; leg=false)
 end
