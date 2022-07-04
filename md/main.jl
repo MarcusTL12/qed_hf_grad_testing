@@ -55,7 +55,8 @@ function calculate_momentum(v, masses)
     mom
 end
 
-function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r)); add_first=true, t0=0.0)
+function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r));
+    add_first=true, t0=0.0)
     masses = [atom_mass[a] for a in atoms]
 
     V, g = e_grad_func(r)
@@ -172,7 +173,8 @@ function get_last_conf(filename)
 end
 
 function resume_md(filename, n_steps;
-    Δt=nothing, freq=nothing, pol=nothing, coup=nothing, basis=nothing, omp=nothing, v_scale=1.0)
+    Δt=nothing, freq=nothing, pol=nothing, coup=nothing, basis=nothing,
+    omp=nothing, v_scale=1.0)
     atoms, r, v, t, freq_l, pol_l, coup_l, basis_l, Δt_l = get_last_conf(filename)
 
     v *= v_scale
@@ -287,7 +289,7 @@ function plot_tVK(filename; is=:)
     # plot!(ts, Vs + Ks; label="Total")
     plot(Vs[is]; label="Potential", leg=:bottomleft)
     plot!(Ks[is]; label="Kinetic")
-    plot!((Vs + Ks)[is]; label="Total")
+    plot!((Vs+Ks)[is]; label="Total")
 end
 
 function plot_VK_overlay(filename; is=:)
@@ -345,7 +347,7 @@ function plot_T_window_avg(filename, n)
     T_avg = calc_T_window_avg(Ts, n)
 
     @show last(T_avg)
-    @show extrema(T_avg[end-n + 1:end])
+    @show extrema(T_avg[end-n+1:end])
 
     plot(ts, T_avg; leg=false)
 end
@@ -478,6 +480,10 @@ function calculate_rot_energy(filename)
     end
 
     Es
+end
+
+function calculate_radial_dist_func()
+    
 end
 
 ############ TESTS ###########
