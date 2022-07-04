@@ -3,7 +3,7 @@
 # include("numgrad/main.jl")
 include("md/main.jl")
 
-curfile = "md/many_h2o/20h2o_0.1.xyz"
+curfile = "md/many_h2o/20h2o_free.xyz"
 
 # resume_md(curfile, 50)
 
