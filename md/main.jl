@@ -203,6 +203,18 @@ function resume_md(filename, n_steps;
     end
 end
 
+function keep_temp(filename, target_temp, sim_steps, avg_steps)
+    resume_md(filename, sim_steps)
+
+    avg = get_avg_last_T(filename, avg_steps)
+
+    while !isfile("stop")
+        println("Changing temp from $avg to $target_temp")
+        resume_md(filename, sim_steps; v_scale=min(√(target_temp / avg), 1.2))
+        avg = get_avg_last_T(filename, avg_steps)
+    end
+end
+
 ############ ANALYSIS ########
 
 function get_tVK(filename)
@@ -263,7 +275,7 @@ function get_rv(filename)
     atoms
 end
 
-function plot_tVK(filename)
+function plot_tVK(filename; is=:)
     ts, Vs, Ks = get_tVK(filename)
 
     E0 = Vs[1] + Ks[1]
@@ -273,9 +285,9 @@ function plot_tVK(filename)
     # plot(ts, Vs; label="Potential", leg=:bottomleft)
     # plot!(ts, Ks; label="Kinetic")
     # plot!(ts, Vs + Ks; label="Total")
-    plot(Vs; label="Potential", leg=:bottomleft)
-    plot!(Ks; label="Kinetic")
-    plot!(Vs + Ks; label="Total")
+    plot(Vs[is]; label="Potential", leg=:bottomleft)
+    plot!(Ks[is]; label="Kinetic")
+    plot!((Vs + Ks)[is]; label="Total")
 end
 
 function plot_VK_overlay(filename; is=:)
