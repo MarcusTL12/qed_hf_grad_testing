@@ -861,7 +861,8 @@ function test_ethylene()
     ]' * Å2B
 
     freq = 0.5
-    pol = [1, 0, 0]
+    pol = [1, 0.1, 0.1]
+    pol /= norm(pol)
     coup = 0.05
 
     rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 12)
