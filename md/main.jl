@@ -213,7 +213,7 @@ function keep_temp(filename, target_temp, sim_steps, avg_steps)
 
     while !isfile("stop")
         println("Changing temp from $avg to $target_temp")
-        resume_md(filename, sim_steps; v_scale=min(√(target_temp / avg), 1.2))
+        resume_md(filename, sim_steps; v_scale=clamp(√(target_temp / avg), 0.8, 1.2))
         avg = get_avg_last_T(filename, avg_steps)
     end
 end
