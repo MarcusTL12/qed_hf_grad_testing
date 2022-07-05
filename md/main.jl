@@ -858,5 +858,17 @@ function test_ethylene()
         1.8850 -0.9440 0.0000
         -0.5450 0.9440 0.0000
         -0.5450 -0.9440 0.0000
-    ]
+    ]' |> copy
+
+    freq = 0.5
+    pol = [1, 0, 0]
+    coup = 0.05
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 13)
+
+    e_grad_func = make_e_and_grad_func(rf)
+
+    open("md/matteo/ethylene.xyz", "w") do io
+        do_md(io, 10, 10.0, atoms, e_grad_func, r)
+    end
 end
