@@ -2,6 +2,8 @@ using OhMyREPL
 using LinearAlgebra
 using Plots
 using DSP
+using Statistics
+using KernelDensity
 
 include("../common.jl")
 
@@ -54,7 +56,8 @@ function calculate_momentum(v, masses)
     mom
 end
 
-function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r)); add_first=true, t0=0.0)
+function do_md(io::IO, n_steps, Δt, atoms, e_grad_func, r, v=zeros(size(r));
+    add_first=true, t0=0.0)
     masses = [atom_mass[a] for a in atoms]
 
     V, g = e_grad_func(r)
@@ -171,7 +174,8 @@ function get_last_conf(filename)
 end
 
 function resume_md(filename, n_steps;
-    Δt=nothing, freq=nothing, pol=nothing, coup=nothing, basis=nothing, omp=nothing, v_scale=1.0)
+    Δt=nothing, freq=nothing, pol=nothing, coup=nothing, basis=nothing,
+    omp=nothing, v_scale=1.0)
     atoms, r, v, t, freq_l, pol_l, coup_l, basis_l, Δt_l = get_last_conf(filename)
 
     v *= v_scale
@@ -199,6 +203,18 @@ function resume_md(filename, n_steps;
 
     open(filename, "a") do io
         do_md(io, n_steps, Δt, atoms, e_grad_func, r, v; add_first=false, t0=t)
+    end
+end
+
+function keep_temp(filename, target_temp, sim_steps, avg_steps)
+    resume_md(filename, sim_steps)
+
+    avg = get_avg_last_T(filename, avg_steps)
+
+    while !isfile("stop")
+        println("Changing temp from $avg to $target_temp")
+        resume_md(filename, sim_steps; v_scale=clamp(√(target_temp / avg), 0.8, 1.2))
+        avg = get_avg_last_T(filename, avg_steps)
     end
 end
 
@@ -262,7 +278,7 @@ function get_rv(filename)
     atoms
 end
 
-function plot_tVK(filename)
+function plot_tVK(filename; is=:)
     ts, Vs, Ks = get_tVK(filename)
 
     E0 = Vs[1] + Ks[1]
@@ -272,9 +288,9 @@ function plot_tVK(filename)
     # plot(ts, Vs; label="Potential", leg=:bottomleft)
     # plot!(ts, Ks; label="Kinetic")
     # plot!(ts, Vs + Ks; label="Total")
-    plot(Vs; label="Potential", leg=:bottomleft)
-    plot!(Ks; label="Kinetic")
-    plot!(Vs + Ks; label="Total")
+    plot(Vs[is]; label="Potential", leg=:bottomleft)
+    plot!(Ks[is]; label="Kinetic")
+    plot!((Vs+Ks)[is]; label="Total")
 end
 
 function plot_VK_overlay(filename; is=:)
@@ -301,6 +317,12 @@ function plot_T(filename)
     plot(ts, Ts; ylabel="T [K]")
 end
 
+function get_avg_last_T(filename, n)
+    _, _, Ks, n_atm = get_tVK(filename)
+    Ts = calculate_T_instant(Ks, n_atm)
+    mean(@view Ts[end-(n-1):end])
+end
+
 function compare_T(filenames)
     plot(; ylabel="T [K]", leg=:bottomright)
 
@@ -324,6 +346,9 @@ function plot_T_window_avg(filename, n)
     Ts = calculate_T_instant(Ks, n_atm)
 
     T_avg = calc_T_window_avg(Ts, n)
+
+    @show last(T_avg)
+    @show extrema(T_avg[end-n+1:end])
 
     plot(ts, T_avg; leg=false)
 end
@@ -426,7 +451,8 @@ function calculate_tot_ang_mom(filename)
     ams = Float64[]
 
     for f in 1:size(rs, 3)
-        @views append!(ams, calculate_ang_mom(rs[:, :, f], vs[:, :, f], coms[:, f], atoms))
+        @views append!(ams,
+            calculate_ang_mom(rs[:, :, f], vs[:, :, f], coms[:, f], atoms))
     end
 
     reshape(ams, 3, size(rs, 3))
@@ -456,6 +482,101 @@ function calculate_rot_energy(filename)
     end
 
     Es
+end
+
+function calculate_radial_dist(r, atoms, from_atm, to_atm)
+    dists = Float64[]
+
+    for i in 1:length(atoms)
+        atm1 = atoms[i]
+        if atm1 == from_atm
+            r1 = @view r[:, i]
+
+            range2 = if from_atm == to_atm
+                (i+1):length(atoms)
+            else
+                1:length(atoms)
+            end
+
+            for j in range2
+                atm2 = atoms[j]
+                if atm2 == to_atm
+                    r2 = @view r[:, j]
+                    push!(dists, norm(r1 - r2))
+                end
+            end
+        end
+    end
+
+    dists
+end
+
+function get_last_n_radial_dist(filename, from_atm, to_atm, n, spacing=1)
+    r, _, atoms = get_rv(filename)
+
+    dists = Float64[]
+
+    rng = 1:size(r, 3)
+    rng = rng[end - (spacing * n - 1):spacing:end]
+
+    for i in rng
+        append!(dists, calculate_radial_dist((@view r[:, :, i]),
+            atoms, from_atm, to_atm))
+    end
+
+    dists
+end
+
+function plot_dist!(data; label="")
+    xs = range(extrema(data)...; length=100)
+
+    U = kde(data)
+
+    plot!(xs, x -> pdf(U, x); label=label)
+end
+
+function calculate_std_dev_mass(r, atoms)
+    com = calculate_center_of_mass_conf(r, atoms)
+
+    dev = zeros(Float64, 3)
+
+    for (rc, atm) in zip(eachcol(r), atoms)
+        dev += atom_mass[atm] * (rc - com) .^ 2
+    end
+
+    sqrt.(dev)
+end
+
+function calculate_dev_from_pol_h2o(r, pol)
+    devs = Float64[]
+
+    for i in 1:3:size(r, 2)
+        @views oh1 = r[:, i + 1] - r[:, i]
+        @views oh2 = r[:, i + 2] - r[:, i]
+
+        pol_vec = oh1 × oh2
+
+        pol_vec /= norm(pol_vec)
+
+        push!(devs, abs(pol_vec ⋅ pol))
+    end
+
+    devs
+end
+
+function get_last_n_dev_from_pol(filename, pol, n, spacing=1)
+    r, _, atoms = get_rv(filename)
+
+    devs = Float64[]
+
+    rng = 1:size(r, 3)
+    rng = rng[end - (spacing * n - 1):spacing:end]
+
+    for i in rng
+        append!(devs, calculate_dev_from_pol_h2o((@view r[:, :, i]), pol))
+    end
+
+    devs
 end
 
 ############ TESTS ###########
@@ -645,5 +766,110 @@ function test_10h2o()
     e_grad_func = make_e_and_grad_func(rf)
     open("md/many_h2o/10h2o_0.1.xyz", "w") do io
         do_md(io, 3, 25.0, atoms, e_grad_func, r)
+    end
+end
+
+function test_20h2o()
+    atoms = split_atoms("OHH"^20)
+    basis = "cc-pvdz"
+    r = Float64[
+        -4.10708 -0.59028 1.09302
+        -3.35828 -0.42162 1.70466
+        -4.65083 -1.22593 1.62529
+        -1.55147 0.80097 1.32250
+        -0.60809 1.09225 1.28322
+        -1.54094 0.23115 0.51465
+        -3.31957 2.84156 1.31202
+        -2.69302 2.07763 1.40890
+        -3.09921 3.34560 2.11670
+        -5.91520 -2.39777 1.96031
+        -6.29883 -3.27661 2.18525
+        -6.74820 -1.97369 1.63425
+        -3.51597 -1.74516 -1.30834
+        -2.65476 -1.28598 -1.47388
+        -3.75644 -1.26200 -0.48157
+        -1.11930 -0.50871 -1.11091
+        -0.35691 -1.13493 -1.03793
+        -0.68763 0.24291 -1.57946
+        -5.43437 -3.62526 -0.64297
+        -5.04722 -2.92460 -1.21468
+        -5.33602 -3.18950 0.23093
+        -5.20762 1.53250 -0.20021
+        -4.82975 0.71100 0.20321
+        -4.82010 2.18110 0.43407
+        0.93402 1.57687 0.40754
+        1.65636 1.05117 -0.01379
+        0.53769 1.95834 -0.41251
+        2.18577 -0.20070 2.28319
+        2.71239 -0.24533 1.45470
+        1.70447 0.63681 2.11649
+        -7.54663 0.38725 -1.00831
+        -6.75914 0.90291 -0.70306
+        -7.57429 0.66059 -1.94213
+        -0.07584 -4.63225 -1.53491
+        0.00616 -5.54496 -1.86053
+        -1.06291 -4.57391 -1.45856
+        -7.64513 -4.33674 0.94991
+        -7.04397 -4.45802 0.18357
+        -8.08645 -3.49725 0.69850
+        -2.87349 2.74617 -1.45164
+        -2.98052 3.06667 -0.52658
+        -3.72554 2.26660 -1.53877
+        2.73200 -0.29075 -0.50400
+        3.45098 -0.55688 -1.10593
+        2.11485 -1.05868 -0.62766
+        -0.34820 2.04718 -1.99494
+        -0.19156 2.53141 -2.82679
+        -1.28703 2.32819 -1.82224
+        -2.76085 -4.42778 -1.41518
+        -2.94899 -3.46279 -1.48862
+        -3.65585 -4.72904 -1.15070
+        -8.22768 -1.57532 0.68895
+        -7.94392 -0.93223 -0.01331
+        -9.09068 -1.18096 0.91417
+        0.95768 -2.60679 2.01643
+        0.87012 -3.03437 2.88500
+        1.38334 -1.75232 2.27407
+        0.93890 -2.29545 -0.67166
+        0.87353 -2.56510 0.28390
+        0.67586 -3.16797 -1.07064
+    ]' * Å2B
+
+    freq = 0.5
+    pol = [0, 1, 0]
+    # pol = pol / norm(pol)
+    coup = 0.1
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 12)
+
+    e_grad_func = make_e_and_grad_func(rf)
+    open("md/many_h2o/20h2o_0.1.xyz", "w") do io
+        do_md(io, 1, 50.0, atoms, e_grad_func, r)
+    end
+end
+
+function test_ethylene()
+    atoms = split_atoms("CCHHHH")
+    basis = "aug-cc-pvdz"
+    r = Float64[
+        0.0000 0.0000 0.0000
+        1.3400 0.0000 0.0000
+        1.8850 0.9440 0.0000
+        1.8850 -0.9440 0.0000
+        -0.5450 0.9440 0.0000
+        -0.5450 -0.9440 0.0000
+    ]' * Å2B
+
+    freq = 0.5
+    pol = [1, 0.1, 0.1]
+    pol /= norm(pol)
+    coup = 0.05
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 12)
+
+    e_grad_func = make_e_and_grad_func(rf)
+
+    open("md/matteo/ethylene.xyz", "w") do io
+        do_md(io, 10, 10.0, atoms, e_grad_func, r)
     end
 end

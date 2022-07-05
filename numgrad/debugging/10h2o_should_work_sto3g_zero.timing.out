@@ -1,0 +1,82 @@
+  ------------------------------------------------------------
+  Configuration date: 2022-06-29 00:33:16 UTC +02:00
+  Git branch:         qed_hf_grad_print
+  Git hash:           1d17b0bd3b496969b9984e2aa0841af9aa0aedc6
+  Fortran compiler:   GNU 12.1.0
+  C compiler:         GNU 12.1.0
+  C++ compiler:       GNU 12.1.0
+  LAPACK type:        MKL
+  BLAS type:          MKL
+  64-bit integers:    ON
+  OpenMP:             ON
+  PCM:                OFF
+  Forced batching:    OFF
+  Runtime checks:     OFF
+  ------------------------------------------------------------
+
+  Description                                 wall[s]         cpu[s]    cpu/wall
+  -------------------------------------------------------------------------------------
+  One-electron integrals (overlap)             0.01            0.21     18.08
+  Cholesky decomposition of AO        
+  overlap                                      0.04            1.04     25.12
+  Time initializing AO tool                    0.07            1.30     19.58
+  One-electron integrals (overlap)             0.00            0.01     26.80
+  One-electron integrals (dipole)              0.00            0.01     26.78
+
+
+  Generating initial SAD density
+  ==============================
+  SAD generation time                          0.02            0.47     28.42
+  Generating initial SAD density               0.02            0.57     28.67
+
+
+  Determining reference state
+  ===========================
+  One-electron integrals              
+  (hamiltonian)                                0.00            0.09     29.90
+  AO G construction                            0.03            0.99     30.83
+  AO G construction                            0.12            3.63     30.92
+  SCF diagonalization                          0.00            0.04     30.81
+  SCF iteration                                0.12            3.75     30.92
+  AO G construction                            0.11            3.53     30.92
+  SCF diagonalization                          0.00            0.03     30.65
+  SCF iteration                                0.12            3.64     30.92
+  AO G construction                            0.11            3.46     30.93
+  SCF diagonalization                          0.00            0.03     30.83
+  SCF iteration                                0.12            3.57     30.92
+  AO G construction                            0.11            3.31     30.92
+  SCF diagonalization                          0.00            0.03     30.86
+  SCF iteration                                0.11            3.42     30.92
+  AO G construction                            0.10            2.94     30.92
+  SCF diagonalization                          0.00            0.03     30.88
+  SCF iteration                                0.10            3.05     30.92
+  AO G construction                            0.09            2.72     30.92
+  SCF diagonalization                          0.00            0.03     30.84
+  SCF iteration                                0.09            2.84     30.92
+  AO G construction                            0.08            2.58     30.92
+  SCF diagonalization                          0.00            0.03     30.89
+  SCF iteration                                0.09            2.70     30.92
+  AO G construction                            0.08            2.34     30.92
+  SCF diagonalization                          0.00            0.03     30.86
+  SCF iteration                                0.08            2.47     30.92
+  AO G construction                            0.07            2.21     30.91
+  SCF diagonalization                          0.00            0.07     30.91
+  SCF iteration                                0.08            2.44     30.91
+  AO G construction                            0.06            1.84     30.92
+  SCF diagonalization                          0.00            0.03     30.85
+  SCF iteration                                0.06            1.97     30.92
+  AO G construction                            0.05            1.67     30.92
+  SCF diagonalization                          0.00            0.04     30.85
+  SCF iteration                                0.06            1.80     30.92
+  AO G construction                            0.05            1.41     30.92
+  SCF diagonalization                          0.00            0.03     30.86
+  SCF iteration                                0.05            1.53     30.92
+  AO G construction                            0.04            1.23     30.92
+  SCF diagonalization                          0.00            0.03     30.87
+  SCF iteration                                0.04            1.36     30.92
+  AO G construction                            0.03            0.92     30.92
+  SCF iteration                                0.03            0.99     30.92
+  SCF solver                                   1.15           35.59     30.92
+  QED-HF gradient                              1.02           31.50     30.92
+  Determining reference state                  2.32           71.79     30.90
+  Total time in eT                             2.41           73.71     30.55
