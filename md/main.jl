@@ -735,3 +735,16 @@ function test_20h2o()
         do_md(io, 1, 50.0, atoms, e_grad_func, r)
     end
 end
+
+function test_ethylene()
+    atoms = split_atoms("CCHHHH")
+    basis = "aug-cc-pvdz"
+    r = Float64[
+        0.0000 0.0000 0.0000
+        1.3400 0.0000 0.0000
+        1.8850 0.9440 0.0000
+        1.8850 -0.9440 0.0000
+        -0.5450 0.9440 0.0000
+        -0.5450 -0.9440 0.0000
+    ]
+end
