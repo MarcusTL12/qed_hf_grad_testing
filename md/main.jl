@@ -864,7 +864,7 @@ function test_ethylene()
     pol = [1, 0, 0]
     coup = 0.05
 
-    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 13)
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 12)
 
     e_grad_func = make_e_and_grad_func(rf)
 
