@@ -3,6 +3,7 @@ using LinearAlgebra
 using Plots
 using DSP
 using Statistics
+using KernelDensity
 
 include("../common.jl")
 
@@ -212,7 +213,7 @@ function keep_temp(filename, target_temp, sim_steps, avg_steps)
 
     while !isfile("stop")
         println("Changing temp from $avg to $target_temp")
-        resume_md(filename, sim_steps; v_scale=min(√(target_temp / avg), 1.2))
+        resume_md(filename, sim_steps; v_scale=clamp(√(target_temp / avg), 0.8, 1.2))
         avg = get_avg_last_T(filename, avg_steps)
     end
 end
@@ -277,19 +278,22 @@ function get_rv(filename)
     atoms
 end
 
-function plot_tVK(filename; is=:)
+function plot_tVK(filename; is=:, time=false)
     ts, Vs, Ks = get_tVK(filename)
 
     E0 = Vs[1] + Ks[1]
     @show E0
     Vs .-= E0
 
-    # plot(ts, Vs; label="Potential", leg=:bottomleft)
-    # plot!(ts, Ks; label="Kinetic")
-    # plot!(ts, Vs + Ks; label="Total")
-    plot(Vs[is]; label="Potential", leg=:bottomleft)
-    plot!(Ks[is]; label="Kinetic")
-    plot!((Vs+Ks)[is]; label="Total")
+    if time
+        plot(ts[is], Vs[is]; label="Potential", leg=:bottomleft)
+        plot!(ts[is], Ks[is]; label="Kinetic")
+        plot!(ts[is], (Vs + Ks)[is]; label="Total")
+    else
+        plot(Vs[is]; label="Potential", leg=:bottomleft)
+        plot!(Ks[is]; label="Kinetic")
+        plot!((Vs+Ks)[is]; label="Total")
+    end
 end
 
 function plot_VK_overlay(filename; is=:)
@@ -450,7 +454,8 @@ function calculate_tot_ang_mom(filename)
     ams = Float64[]
 
     for f in 1:size(rs, 3)
-        @views append!(ams, calculate_ang_mom(rs[:, :, f], vs[:, :, f], coms[:, f], atoms))
+        @views append!(ams,
+            calculate_ang_mom(rs[:, :, f], vs[:, :, f], coms[:, f], atoms))
     end
 
     reshape(ams, 3, size(rs, 3))
@@ -482,8 +487,99 @@ function calculate_rot_energy(filename)
     Es
 end
 
-function calculate_radial_dist_func()
-    
+function calculate_radial_dist(r, atoms, from_atm, to_atm)
+    dists = Float64[]
+
+    for i in 1:length(atoms)
+        atm1 = atoms[i]
+        if atm1 == from_atm
+            r1 = @view r[:, i]
+
+            range2 = if from_atm == to_atm
+                (i+1):length(atoms)
+            else
+                1:length(atoms)
+            end
+
+            for j in range2
+                atm2 = atoms[j]
+                if atm2 == to_atm
+                    r2 = @view r[:, j]
+                    push!(dists, norm(r1 - r2))
+                end
+            end
+        end
+    end
+
+    dists
+end
+
+function get_last_n_radial_dist(filename, from_atm, to_atm, n, spacing=1)
+    r, _, atoms = get_rv(filename)
+
+    dists = Float64[]
+
+    rng = 1:size(r, 3)
+    rng = rng[end-(spacing*n-1):spacing:end]
+
+    for i in rng
+        append!(dists, calculate_radial_dist((@view r[:, :, i]),
+            atoms, from_atm, to_atm))
+    end
+
+    dists
+end
+
+function plot_dist!(data; label="")
+    xs = range(extrema(data)...; length=100)
+
+    U = kde(data)
+
+    plot!(xs, x -> pdf(U, x); label=label)
+end
+
+function calculate_std_dev_mass(r, atoms)
+    com = calculate_center_of_mass_conf(r, atoms)
+
+    dev = zeros(Float64, 3)
+
+    for (rc, atm) in zip(eachcol(r), atoms)
+        dev += atom_mass[atm] * (rc - com) .^ 2
+    end
+
+    sqrt.(dev)
+end
+
+function calculate_dev_from_pol_h2o(r, pol)
+    devs = Float64[]
+
+    for i in 1:3:size(r, 2)
+        @views oh1 = r[:, i+1] - r[:, i]
+        @views oh2 = r[:, i+2] - r[:, i]
+
+        pol_vec = oh1 × oh2
+
+        pol_vec /= norm(pol_vec)
+
+        push!(devs, abs(pol_vec ⋅ pol))
+    end
+
+    devs
+end
+
+function get_last_n_dev_from_pol(filename, pol, n, spacing=1)
+    r, _, atoms = get_rv(filename)
+
+    devs = Float64[]
+
+    rng = 1:size(r, 3)
+    rng = rng[end-(spacing*n-1):spacing:end]
+
+    for i in rng
+        append!(devs, calculate_dev_from_pol_h2o((@view r[:, :, i]), pol))
+    end
+
+    devs
 end
 
 ############ TESTS ###########
@@ -752,5 +848,31 @@ function test_20h2o()
     e_grad_func = make_e_and_grad_func(rf)
     open("md/many_h2o/20h2o_0.1.xyz", "w") do io
         do_md(io, 1, 50.0, atoms, e_grad_func, r)
+    end
+end
+
+function test_ethylene()
+    atoms = split_atoms("CCHHHH")
+    basis = "aug-cc-pvdz"
+    r = Float64[
+        0.0000 0.0000 0.0000
+        1.3400 0.0000 0.0000
+        1.8850 0.9440 0.0000
+        1.8850 -0.9440 0.0000
+        -0.5450 0.9440 0.0000
+        -0.5450 -0.9440 0.0000
+    ]' * Å2B
+
+    freq = 0.5
+    pol = [1, 0.1, 0.1]
+    pol /= norm(pol)
+    coup = 0.05
+
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 12)
+
+    e_grad_func = make_e_and_grad_func(rf)
+
+    open("md/matteo/ethylene.xyz", "w") do io
+        do_md(io, 10, 10.0, atoms, e_grad_func, r)
     end
 end
