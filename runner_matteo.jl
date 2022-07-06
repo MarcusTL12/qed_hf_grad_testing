@@ -5,5 +5,5 @@ include("md/main.jl")
 
 curfile = "md/matteo/ethylene.xyz"
 
-@time resume_md(curfile, 30000; Δt=20.0)
+@time resume_md(curfile, 30000; Δt=50.0)
 

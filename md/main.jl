@@ -278,19 +278,22 @@ function get_rv(filename)
     atoms
 end
 
-function plot_tVK(filename; is=:)
+function plot_tVK(filename; is=:, time=false)
     ts, Vs, Ks = get_tVK(filename)
 
     E0 = Vs[1] + Ks[1]
     @show E0
     Vs .-= E0
 
-    # plot(ts, Vs; label="Potential", leg=:bottomleft)
-    # plot!(ts, Ks; label="Kinetic")
-    # plot!(ts, Vs + Ks; label="Total")
-    plot(Vs[is]; label="Potential", leg=:bottomleft)
-    plot!(Ks[is]; label="Kinetic")
-    plot!((Vs+Ks)[is]; label="Total")
+    if time
+        plot(ts[is], Vs[is]; label="Potential", leg=:bottomleft)
+        plot!(ts[is], Ks[is]; label="Kinetic")
+        plot!(ts[is], (Vs + Ks)[is]; label="Total")
+    else
+        plot(Vs[is]; label="Potential", leg=:bottomleft)
+        plot!(Ks[is]; label="Kinetic")
+        plot!((Vs+Ks)[is]; label="Total")
+    end
 end
 
 function plot_VK_overlay(filename; is=:)
@@ -517,7 +520,7 @@ function get_last_n_radial_dist(filename, from_atm, to_atm, n, spacing=1)
     dists = Float64[]
 
     rng = 1:size(r, 3)
-    rng = rng[end - (spacing * n - 1):spacing:end]
+    rng = rng[end-(spacing*n-1):spacing:end]
 
     for i in rng
         append!(dists, calculate_radial_dist((@view r[:, :, i]),
@@ -551,8 +554,8 @@ function calculate_dev_from_pol_h2o(r, pol)
     devs = Float64[]
 
     for i in 1:3:size(r, 2)
-        @views oh1 = r[:, i + 1] - r[:, i]
-        @views oh2 = r[:, i + 2] - r[:, i]
+        @views oh1 = r[:, i+1] - r[:, i]
+        @views oh2 = r[:, i+2] - r[:, i]
 
         pol_vec = oh1 × oh2
 
@@ -570,7 +573,7 @@ function get_last_n_dev_from_pol(filename, pol, n, spacing=1)
     devs = Float64[]
 
     rng = 1:size(r, 3)
-    rng = rng[end - (spacing * n - 1):spacing:end]
+    rng = rng[end-(spacing*n-1):spacing:end]
 
     for i in rng
         append!(devs, calculate_dev_from_pol_h2o((@view r[:, :, i]), pol))
