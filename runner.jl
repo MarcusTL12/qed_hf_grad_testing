@@ -7,5 +7,5 @@ include("md/main.jl")
 curfile = "md/many_h2o/20h2o_free.xyz"
 
 # @time resume_md(curfile, 10000)
-@time keep_temp(curfile, 275, 100, 40)
+@time keep_temp(curfile, 275, 1000, 300)
 
