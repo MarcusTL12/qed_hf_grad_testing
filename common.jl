@@ -22,7 +22,7 @@ do
 end do
 
 memory
-    available: 128
+    available: 1920
 end memory
 
 method

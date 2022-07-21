@@ -34,7 +34,7 @@ end solver scf
 qed
     modes:        1
     frequency:    {0.5}
-    polarization: {0, 1, 0}
+    polarization: {0.0, 1.0, 0.0}
     coupling:     {0.1}
 end qed
 
