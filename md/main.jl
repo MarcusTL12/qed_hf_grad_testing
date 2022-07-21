@@ -557,11 +557,11 @@ function calculate_dev_from_pol_h2o(r, pol)
         @views oh1 = r[:, i+1] - r[:, i]
         @views oh2 = r[:, i+2] - r[:, i]
 
-        pol_vec = oh1 × oh2
+        plane_vec = oh1 × oh2
 
-        pol_vec /= norm(pol_vec)
+        plane_vec /= norm(plane_vec)
 
-        push!(devs, abs(pol_vec ⋅ pol))
+        push!(devs, abs(plane_vec ⋅ pol))
     end
 
     devs
@@ -577,6 +577,38 @@ function get_last_n_dev_from_pol(filename, pol, n, spacing=1)
 
     for i in rng
         append!(devs, calculate_dev_from_pol_h2o((@view r[:, :, i]), pol))
+    end
+
+    devs
+end
+
+function calculate_dip_dev_from_pol_h2o(r, pol)
+    devs = Float64[]
+
+    for i in 1:3:size(r, 2)
+        @views oh1 = r[:, i+1] - r[:, i]
+        @views oh2 = r[:, i+2] - r[:, i]
+
+        dip_vec = oh1 + oh2
+
+        dip_vec /= norm(dip_vec)
+
+        push!(devs, abs(dip_vec ⋅ pol))
+    end
+
+    devs
+end
+
+function get_last_n_dip_dev_from_pol(filename, pol, n, spacing=1)
+    r, _, atoms = get_rv(filename)
+
+    devs = Float64[]
+
+    rng = 1:size(r, 3)
+    rng = rng[end-(spacing*n-1):spacing:end]
+
+    for i in rng
+        append!(devs, calculate_dip_dev_from_pol_h2o((@view r[:, :, i]), pol))
     end
 
     devs
