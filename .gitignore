@@ -2,3 +2,4 @@ scratch
 grad.*
 nohup.out
 tmp*
+__pycache__
