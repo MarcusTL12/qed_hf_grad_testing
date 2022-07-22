@@ -1078,7 +1078,7 @@ function test_50h2o()
     end
 end
 
-function test_50h2o()
+function test_30h2o()
     atoms = split_atoms("OHH"^30)
     basis = "cc-pvdz"
     r = Float64[
