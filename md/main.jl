@@ -1179,7 +1179,7 @@ function test_30h2o()
     # pol = pol / norm(pol)
     coup = 0.1
 
-    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 80)
+    rf = make_runner_func("grad", freq, pol, coup, atoms, basis, 43)
 
     e_grad_func = make_e_and_grad_func(rf)
     open("md/many_h2o/30h2o_0.1.xyz", "w") do io
