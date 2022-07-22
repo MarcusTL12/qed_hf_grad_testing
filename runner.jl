@@ -4,6 +4,7 @@
 include("md/main.jl")
 
 curfile = "md/many_h2o/30h2o_free.xyz"
+# curfile = "md/many_h2o/30h2o_0.1.xyz"
 # curfile = "md/many_h2o/50h2o_free.xyz"
 # curfile = "md/many_h2o/20h2o_free.xyz"
 
