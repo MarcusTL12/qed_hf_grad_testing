@@ -3,9 +3,9 @@
 # include("numgrad/main.jl")
 include("md/main.jl")
 
-curfile = "md/many_h2o/50h2o_0.05.xyz"
+curfile = "md/many_h2o/30h2o_free.xyz"
 # curfile = "md/many_h2o/50h2o_free.xyz"
 # curfile = "md/many_h2o/20h2o_free.xyz"
 
-@time resume_md(curfile, 10000)
-# @time keep_temp(curfile, 275, 100, 50)
+# @time resume_md(curfile, 10000)
+@time keep_temp(curfile, 275, 100, 50)
