@@ -531,7 +531,7 @@ function get_last_n_radial_dist(filename, from_atm, to_atm, n, spacing=1)
 end
 
 function plot_dist!(data; label="")
-    xs = range(extrema(data)...; length=100)
+    xs = range(extrema(data)...; length=1000)
 
     U = kde(data)
 
