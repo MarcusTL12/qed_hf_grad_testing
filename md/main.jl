@@ -538,6 +538,14 @@ function plot_dist!(data; label="")
     plot!(xs, x -> pdf(U, x); label=label)
 end
 
+function plot_rad_dist!(data; label="")
+    xs = range(extrema(data)...; length=1000)
+
+    U = kde(data)
+
+    plot!(xs, x -> pdf(U, x) / x; label=label)
+end
+
 function calculate_std_dev_mass(r, atoms)
     com = calculate_center_of_mass_conf(r, atoms)
 
