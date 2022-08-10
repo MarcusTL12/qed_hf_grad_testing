@@ -1,5 +1,6 @@
 scratch
 grad.*
+dipole.*
 nohup.out
 tmp*
 __pycache__
