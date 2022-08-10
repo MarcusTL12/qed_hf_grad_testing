@@ -1,9 +1,9 @@
 
-const dip_reg = r"- Operator: dipole moment \[a.u.\]\s+x:\s+(-?\d+\.\d+)\s+y:\s+(-?\d+\.\d+)\s+z:\s+(-?\d+\.\d+)"s
+const dip_reg = r"Dipole moment in \[Debye\].+?-+\n(.+?) +-{2}"s
 
 function get_dipole(name)
     m = match(dip_reg, read("$name.out", String))
-    parse.(Float64, m.captures)
+    parse.(Float64, split(m.captures[1])[4:4:end])
 end
 
 function make_dip_inp_func(atoms, basis)
@@ -24,7 +24,7 @@ do
 end do
 
 memory
-    available: 8
+    available: 1024
 end memory
 
 method
@@ -34,6 +34,11 @@ end method
 hf mean value
    dipole
 end hf mean value
+
+solver scf
+    restart
+    gradient threshold: 1d-10
+end solver scf
 
 geometry
 basis: $basis
@@ -51,7 +56,7 @@ basis: $basis
 end
 
 function run_inp_clean(name, omp)
-    run(`/home/marcus/eT_clean/build/eT_launch.py $(name).inp --omp $(omp)`)
+    run(`$(homedir())/eT_clean/build/eT_launch.py $(name).inp --omp $(omp)`)
     nothing
 end
 
