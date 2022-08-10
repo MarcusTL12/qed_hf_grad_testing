@@ -50,18 +50,18 @@ basis: $basis
     end
 end
 
-function run_inp_clean(name)
-    run(`/home/marcus/eT_clean/build/eT_launch.py $(name).inp --omp $(OMP_THREADS)`)
+function run_inp_clean(name, omp)
+    run(`/home/marcus/eT_clean/build/eT_launch.py $(name).inp --omp $(omp)`)
     nothing
 end
 
-function find_dipole(atoms, basis, r)
+function find_dipole(atoms, basis, r, omp)
     name = "dipole"
     inp_func = make_dip_inp_func(atoms, basis)
     inp = inp_func(r)
     open("$name.inp", "w") do io
         print(io, inp)
     end
-    run_inp_clean(name)
+    run_inp_clean(name, omp)
     get_dipole(name)
 end
