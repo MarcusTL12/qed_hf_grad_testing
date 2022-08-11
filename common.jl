@@ -1,4 +1,5 @@
 include("get_matrix.jl")
+include("get_dipole.jl")
 
 const Å2B = 1.8897261245650618
 const kB = 3.166811563e-6
@@ -40,6 +41,10 @@ qed
     polarization: {$(pol[1]), $(pol[2]), $(pol[3])}
     coupling:     {$coup}
 end qed
+
+hf mean value
+   dipole
+end hf mean value
 
 geometry
 basis: $basis
