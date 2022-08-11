@@ -6,7 +6,7 @@ function get_dipole(name)
     parse.(Float64, split(m.captures[1])[4:4:end])
 end
 
-function make_dip_inp_func(atoms, basis)
+function make_dip_inp_func(atoms, basis, coupl)
     function make_inp(r)
         r = reshape(r, 3, length(r) ÷ 3)
         io = IOBuffer()
@@ -28,7 +28,7 @@ memory
 end memory
 
 method
-    hf
+    qed-hf
 end method
 
 hf mean value
@@ -39,6 +39,13 @@ solver scf
     restart
     gradient threshold: 1d-10
 end solver scf
+
+qed
+    modes:        1
+    frequency:    {0.5}
+    polarization: {0.0, 1.0, 0.0}
+    coupling:     {$coupl}
+end qed
 
 geometry
 basis: $basis
@@ -60,13 +67,19 @@ function run_inp_clean(name, omp)
     nothing
 end
 
-function find_dipole(atoms, basis, r, omp)
+function find_dipole(atoms, basis, r, coupl, omp)
     name = "dipole"
-    inp_func = make_dip_inp_func(atoms, basis)
+    inp_func = make_dip_inp_func(atoms, basis, coupl)
     inp = inp_func(r)
     open("$name.inp", "w") do io
         print(io, inp)
     end
     run_inp_clean(name, omp)
     get_dipole(name)
+end
+
+function load_dipoles(filename)
+    open(filename) do io
+        [eval(Meta.parse(l)) for l in eachline(io)]
+    end
 end
