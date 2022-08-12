@@ -71,18 +71,18 @@ function run_inp(name, omp)
     if isnothing(omp)
         omp = parse(Int, read("omp.txt", String))
     end
-    run(`$(homedir())/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch -ks`)
+    run(`$(homedir())/eT_qed_hf_grad_print/build/eT_launch.py $(name).inp --omp $(omp) --scratch ./scratch/$(name) -ks`)
     nothing
 end
 
-function delete_scratch()
-    if isdir("./scratch/")
-        rm("./scratch/"; recursive=true)
+function delete_scratch(name)
+    if isdir("./scratch/$(name)")
+        rm("./scratch/$(name)"; recursive=true)
     end
 end
 
 function make_runner_func(name, freq, pol, coup, atoms, basis, omp)
-    delete_scratch()
+    delete_scratch(name)
     inp_func = make_inp_func(freq, pol, coup, atoms, basis)
     function runner_func(r)
         inp = inp_func(r)

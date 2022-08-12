@@ -1,0 +1,2 @@
+md/many_h2o filter=lfs diff=lfs merge=lfs -text
+md/many_h2o/*.xyz filter=lfs diff=lfs merge=lfs -text
