@@ -1,3 +1,3 @@
-4p stencil:
-h = 1e-3
-(1, 1) => 0.004967056025422549
+version https://git-lfs.github.com/spec/v1
+oid sha256:f8b5f24275bc73d294620598854688d8c10ea59805e6244df662e44d4082ba6b
+size 52

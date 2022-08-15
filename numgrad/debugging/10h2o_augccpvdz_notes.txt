@@ -1,2 +1,3 @@
-4p; 1e-3
-(1, 1) => 0.05906794064328046
+version https://git-lfs.github.com/spec/v1
+oid sha256:2dcfdcaf33a4c127a28479e48f97b1852f6a7980242d4959ef62dcee2f58f5aa
+size 38

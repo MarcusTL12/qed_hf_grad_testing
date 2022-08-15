@@ -1,6 +1,3 @@
-scratch
-grad.*
-dipole.*
-nohup.out
-tmp*
-__pycache__
+version https://git-lfs.github.com/spec/v1
+oid sha256:5b2e1a3390753486bb4e7dfecdcb5e7d4d84a54e2ccf1d66d39ed15e491778bc
+size 50

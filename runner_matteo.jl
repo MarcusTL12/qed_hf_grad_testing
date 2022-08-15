@@ -1,9 +1,3 @@
-# Script meant for editing and running as job on cluster
-
-# include("numgrad/main.jl")
-include("md/main.jl")
-
-curfile = "md/matteo/ethylene.xyz"
-
-@time resume_md(curfile, 30000; Δt=50.0)
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:1844a1db14b09bbcf2ace844d5de3a366f292fe5c405ef307f573f74f9543f7a
+size 189
