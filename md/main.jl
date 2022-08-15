@@ -284,6 +284,34 @@ function get_rv(filename)
     atoms
 end
 
+function get_µ(filename)
+    µs = Float64[]
+
+    n_atm = 0
+    n_frames = 0
+
+    open(filename) do io
+        lines = Iterators.Stateful(eachline(io))
+
+        while !isempty(lines)
+            n_atm = parse(Int, popfirst!(lines))
+            l = popfirst!(lines)
+            ls = split(l, "; ")
+            µ = get(ls, 10, missing)
+
+            if !ismissing(µ)
+                append!(µs, eval(Meta.parse(µ)))
+            end
+
+            for _ in 1:n_atm
+                popfirst!(lines)
+            end
+        end
+    end
+
+    reshape(µs, 3, length(µs) ÷ 3)
+end
+
 function plot_tVK(filename; is=:, time=false)
     ts, Vs, Ks = get_tVK(filename)
 
@@ -626,6 +654,14 @@ function get_last_n_dip_dev_from_pol(filename, pol, n, spacing=1)
     end
 
     devs
+end
+
+function plot_µ_hist(filename)
+    µs = get_µ(filename)
+
+    plot(@view µs[1, :]; label="x")
+    plot!(@view µs[2, :]; label="y")
+    plot!(@view µs[3, :]; label="z")
 end
 
 ############ TESTS ###########
